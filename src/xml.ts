@@ -284,13 +284,13 @@ export const getXMLTask = function (pID, pIdx) {
   if (pIdx === true) vIdx = pID;
   else {
     for (i = 0; i < this.vTaskList.length; i++) {
-      if (this.vTaskList[i].getID() == pID) { vIdx = i; break; }
+      if (this.vTaskList[i].vID == pID) { vIdx = i; break; }
     }
   }
   if (vIdx >= 0 && vIdx < this.vTaskList.length) {
     /* Simplest way to return case sensitive node names is to just build a string */
     vTask = '<task>';
-    vTask += '<pID>' + this.vTaskList[vIdx].getID() + '</pID>';
+    vTask += '<pID>' + this.vTaskList[vIdx].vID + '</pID>';
     vTask += '<pName>' + this.vTaskList[vIdx].getName() + '</pName>';
     vTask += '<pStart>' + formatDateStr(this.vTaskList[vIdx].getStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pStart>';
     vTask += '<pEnd>' + formatDateStr(this.vTaskList[vIdx].getEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pEnd>';

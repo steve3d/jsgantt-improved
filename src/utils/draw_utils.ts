@@ -61,7 +61,7 @@ export const newNode = function (pParent, pNodeType, pId = null, pClass = null, 
 export const getArrayLocationByID = function (pId) {
   let vList = this.getList();
   for (let i = 0; i < vList.length; i++) {
-    if (vList[i].getID() == pId)
+    if (vList[i].vID == pId)
       return i;
   }
   return -1;
@@ -77,7 +77,7 @@ export const CalcTaskXY = function () {
   let vHeight = Math.floor((this.getRowHeight() / 2));
 
   for (let i = 0; i < vList.length; i++) {
-    vID = vList[i].getID();
+    vID = vList[i].vID;
     vBarDiv = vList[i].getBarDiv();
     vTaskDiv = vList[i].getTaskDiv();
     if ((vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)) {

@@ -227,7 +227,8 @@ export const GanttChart = function (pDiv, pFormat) {
       if (this.vTaskList[i].getGroup() == 1) vBGColor = 'ggroupitem';
       else vBGColor = 'glineitem';
 
-      let vID = this.vTaskList[i].getID();
+      console.log(this.vTaskList[i]);
+      let vID = this.vTaskList[i].vID;
       let vTmpRow, vTmpCell;
       if ((!(this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2)) || this.vTaskList[i].getGroup() == 2) {
         if (this.vTaskList[i].getVisible() == 0) vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
@@ -546,7 +547,7 @@ export const GanttChart = function (pDiv, pFormat) {
       }
 
 
-      const vID = this.vTaskList[i].getID();
+      const vID = this.vTaskList[i].vID;
       let vComb = (this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2);
       let vCellFormat = '';
       let vTmpDiv = null;

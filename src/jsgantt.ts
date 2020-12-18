@@ -39,7 +39,7 @@ import {
 	getScrollPositions, isIE, benchMark, getZoomFactor, hideToolTip, fadeToolTip, criticalPath, updateFlyingObj, moveToolTip,
 } from "./utils/general_utils";
 import { parseXML, parseXMLString, findXMLNode, getXMLNodeValue, AddXMLTask } from './xml';
-import { taskLink, sortTasks, TaskItem, processRows } from "./task";
+import { taskLink, sortTasks, TaskItem, processRows } from './task';
 import { GanttChart } from "./draw";
 import { parseJSON, parseJSONString, addJSONTask } from "./json";
 import { getMinDate, getMaxDate, parseDateStr, formatDateStr, parseDateFormatStr, getIsoWeek } from "./utils/date_utils";

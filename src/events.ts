@@ -10,7 +10,7 @@ export const folder = function (pID, ganttObj) {
   ganttObj.clearDependencies(); // clear these first so slow rendering doesn't look odd
 
   for (let i = 0; i < vList.length; i++) {
-    if (vList[i].getID() == pID) {
+    if (vList[i].vID == pID) {
       if (vList[i].getOpen() == 1) {
         vList[i].setOpen(0);
         hide(pID, ganttObj);
@@ -49,7 +49,7 @@ export const hide = function (pID, ganttObj) {
 
   for (let i = 0; i < vList.length; i++) {
     if (vList[i].getParent() == pID) {
-      vID = vList[i].getID();
+      vID = vList[i].vID;
       // it's unlikely but if the task list has been updated since
       // the chart was drawn some of the rows may not exist
       if (vList[i].getListChildRow()) vList[i].getListChildRow().style.display = 'none';
@@ -82,7 +82,7 @@ export const show = function (pID, pTop, ganttObj) {
   for (let i = 0; i < vList.length; i++) {
     if (vList[i].getParent() == pID) {
       let vChgState = false;
-      vID = vList[i].getID();
+      vID = vList[i].vID;
 
       if (pTop == 1 && vState == '+') vChgState = true;
       else if (vState == '-') vChgState = true;
