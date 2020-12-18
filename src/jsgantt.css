@@ -4,6 +4,23 @@
   font-size: 13px;
 }
 
+/*
+.gchartformat-day .gmainright .footerdays .gminorheading {
+  width: 18px;
+}
+
+.gchartformat-week .gmainright .footerdays .gminorheading {
+  width: 18px;
+}
+
+.gchartformat-month .gmainright .footerdays .gminorheading {
+  width: 18px;
+}
+
+.gchartformat-quarter .gmainright .footerdays .gminorheading {
+  width: 18px;
+} */
+
 div.gantt {
   color: #656565;
 }

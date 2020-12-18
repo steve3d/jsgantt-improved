@@ -34,6 +34,7 @@ import {
 } from './utils/general_utils';
 
 export class GanttChart {
+
     vContainerDiv: HTMLDivElement;
     vDivId: string = null;
     vUseFade = true;
@@ -124,7 +125,7 @@ export class GanttChart {
     vQuarterMajorDateDisplayFormat = parseDateFormatStr('yyyy');
     vQuarterMinorDateDisplayFormat = parseDateFormatStr('qq');
     vUseFullYear = parseDateFormatStr('dd/mm/yyyy');
-    vCaptionType;
+    vCaptionType: 'Caption' | 'Resource' | 'Duration' | 'Complete';
     vDepId = 1;
     vTaskList: TaskItem[] = [];
     vFormatArr = ['hour', 'day', 'week', 'month', 'quarter'];
@@ -166,7 +167,6 @@ export class GanttChart {
     }
 
     set vLang(val: string) {
-        console.log('setting lang', val);
         if (this.vLangs.hasOwnProperty(val))
             this.currentLang = val;
     }
@@ -203,7 +203,7 @@ export class GanttChart {
 
     setFormatArr() {
         let vValidFormats = 'hour day week month quarter';
-        this.vFormatArr = new Array();
+        this.vFormatArr = [];
         for (let i = 0, j = 0; i < arguments.length; i++) {
             if (vValidFormats.indexOf(arguments[i].toLowerCase()) != -1 && arguments[i].length > 1) {
                 this.vFormatArr[j++] = arguments[i].toLowerCase();
@@ -287,7 +287,7 @@ export class GanttChart {
 
     setShowSelector() {
         let vValidSelectors = 'top bottom';
-        this.vShowSelector = new Array();
+        this.vShowSelector = [];
         for (let i = 0, j = 0; i < arguments.length; i++) {
             if (vValidSelectors.indexOf(arguments[i].toLowerCase()) != -1 && arguments[i].length > 1) {
                 this.vShowSelector[j++] = arguments[i].toLowerCase();
@@ -774,13 +774,8 @@ export class GanttChart {
     };
 
     AddTaskItem(value: TaskItem) {
-        let vExists = false;
-        for (let i = 0; i < this.vTaskList.length; i++) {
-            if (this.vTaskList[i].vID == value.vID) {
-                i = this.vTaskList.length;
-                vExists = true;
-            }
-        }
+        let vExists = this.vTaskList.find(t => t.vID === value.vID);
+
         if (!vExists) {
             this.vTaskList.push(value);
             this.vProcessNeeded = true;
@@ -1446,7 +1441,7 @@ export class GanttChart {
                 }
 
                 if (vTmpDate <= vMaxDate) {
-                    const vTmpCell = newNode(vTmpRow, 'td', null, vMinorHeaderCellClass, vColWidth);
+                    const vTmpCell = newNode(vTmpRow, 'td', null, vMinorHeaderCellClass, null, vColWidth);
                     newNode(vTmpCell, 'div', null, null, formatDateStr(vTmpDate, this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang]));
                     vNumCols++;
                 }
@@ -1498,11 +1493,7 @@ export class GanttChart {
         const vDateRow = vTmpRow;
 
         // Calculate size of grids  : Plus 3 because 1 border left + 2 of paddings
-        let vTaskLeftPx = (vNumCols * (vColWidth + 3)) + 1;
-        // Fix a small space at the end for day
-        if (this.vFormat === 'day') {
-            vTaskLeftPx += 2;
-        }
+        let vTaskLeftPx = (vNumCols * (vColWidth + 3));
         vTmpTab.style.width = vTaskLeftPx + 'px'; // Ensure that the headings has exactly the same width as the chart grid
         // const vTaskPlanLeftPx = (vNumCols * (vColWidth + 3)) + 1;
         let vSingleCell = false;

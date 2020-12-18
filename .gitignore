@@ -1,9 +1,5 @@
 node_modules/
 *.log
 package-lock.json
-/jsgantt.js
 .idea
-dist/src
-dist/e2e
-dist/test
-dist/index.*
+dist

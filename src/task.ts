@@ -26,15 +26,15 @@ export interface TaskItemObject {
 declare let g: any;
 
 // function to open window to display task link
-export const taskLink = function (pRef, pWidth, pHeight) {
+export function taskLink (pRef, pWidth, pHeight) {
   let vWidth, vHeight;
   if (pWidth) vWidth = pWidth; else vWidth = 400;
   if (pHeight) vHeight = pHeight; else vHeight = 400;
 
   window.open(pRef, 'newwin', 'height=' + vHeight + ',width=' + vWidth); // let OpenWindow = 
-};
+}
 
-export const sortTasks = function (pList, pID, pIdx) {
+export function sortTasks (pList, pID, pIdx) {
   if (pList.length < 2) {
     return pIdx;
   }
@@ -63,9 +63,9 @@ export const sortTasks = function (pList, pID, pIdx) {
     }
   }
   return sortIdx;
-};
+}
 
-export const TaskItemObject = function (object) {
+export function TaskItemObject (object) {
   const pDataObject = {...object};
 
   internalProperties.forEach(property => {
@@ -95,7 +95,7 @@ export const TaskItemObject = function (object) {
     object.pBarText,
     object
   );
-};
+}
 
 export class TaskItem {
   vStart: Date = null;
@@ -414,7 +414,7 @@ export class TaskItem {
  *        If function(task): Promise<string>) - async per task template. Tooltip will show 'Loading...' if promise is not yet complete.
  *          Otherwise returned template will be handled in the same manner as in other cases.
  */
-export const createTaskInfo = function (pTask, templateStrOrFn = null) {
+export function createTaskInfo (pTask, templateStrOrFn = null) {
   let vTmpDiv;
   let vTaskInfoBox = document.createDocumentFragment();
   let vTaskInfo = newNode(vTaskInfoBox, 'div', null, 'gTaskInfo');
@@ -499,10 +499,10 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
   }
 
   return {component: vTaskInfoBox, callback};
-};
+}
 
 
-export const AddTaskItem = function (value) {
+export function AddTaskItem (value) {
   let vExists = false;
   for (let i = 0; i < this.vTaskList.length; i++) {
     if (this.vTaskList[i].vID == value.vID) {
@@ -514,32 +514,17 @@ export const AddTaskItem = function (value) {
     this.vTaskList.push(value);
     this.vProcessNeeded = true;
   }
-};
+}
 
-export const AddTaskItemObject = function (object) {
+export function AddTaskItemObject (object) {
   if (!object.pGantt) {
     object.pGantt = this;
   }
   return this.AddTaskItem(TaskItemObject(object));
-};
-
-export const RemoveTaskItem = function (pID) {
-  // simply mark the task for removal at this point - actually remove it next time we re-draw the chart
-  for (let i = 0; i < this.vTaskList.length; i++) {
-    if (this.vTaskList[i].vID == pID) this.vTaskList[i].vToDelete = true;
-    else if (this.vTaskList[i].vParent == pID) this.RemoveTaskItem(this.vTaskList[i].vID);
-  }
-  this.vProcessNeeded = true;
-};
-
-export const ClearTasks = function () {
-  this.vTaskList.map(task => this.RemoveTaskItem(task.vID));
-  this.vProcessNeeded = true;
-};
-
+}
 
 // Recursively process task tree ... set min, max dates of parent tasks and identfy task level.
-export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug = false) {
+export function processRows (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug = false) {
   let vMinDate = null;
   let vMaxDate = null;
   let vMinPlanDate = null;
@@ -682,4 +667,4 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
       return a.vSortIdx - b.vSortIdx;
     });
   }
-};
+}

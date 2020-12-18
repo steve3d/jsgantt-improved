@@ -32,8 +32,16 @@ export const makeInput = function (formattedValue, editable, type = 'text', valu
   }
 }
 
-export const newNode = function (pParent, pNodeType, pId = null, pClass = null, pText = null,
-  pWidth = null, pLeft = null, pDisplay = null, pColspan = null, pAttribs = null) {
+export function newNode(pParent: any,
+                        pNodeType: string,
+                        pId: string = null,
+                        pClass: string = null,
+                        pText: string = null,
+                        pWidth: number | string = null,
+                        pLeft: number | string = null,
+                        pDisplay: string = null,
+                        pColspan: number = null,
+                        pAttribs = null) {
   let vNewNode = pParent.appendChild(document.createElement(pNodeType));
   if (pAttribs) {
     for (let i = 0; i + 1 < pAttribs.length; i += 2) {
@@ -42,8 +50,8 @@ export const newNode = function (pParent, pNodeType, pId = null, pClass = null, 
   }
   if (pId) vNewNode.id = pId; // I wish I could do this with setAttribute but older IEs don't play nice
   if (pClass) vNewNode.className = pClass;
-  if (pWidth) vNewNode.style.width = (isNaN(pWidth * 1)) ? pWidth : pWidth + 'px';
-  if (pLeft) vNewNode.style.left = (isNaN(pLeft * 1)) ? pLeft : pLeft + 'px';
+  if (pWidth) vNewNode.style.width = (typeof pWidth === 'string') ? pWidth : pWidth + 'px';
+  if (pLeft) vNewNode.style.left = (typeof pLeft === 'string') ? pLeft : pLeft + 'px';
   if (pText) {
     if (pText.indexOf && pText.indexOf('<') === -1) {
       vNewNode.appendChild(document.createTextNode(pText));
@@ -52,9 +60,9 @@ export const newNode = function (pParent, pNodeType, pId = null, pClass = null, 
     }
   }
   if (pDisplay) vNewNode.style.display = pDisplay;
-  if (pColspan) vNewNode.colSpan = pColspan;
+  if (pColspan && vNewNode instanceof HTMLTableCellElement) vNewNode.colSpan = pColspan;
   return vNewNode;
-};
+}
 
 
 

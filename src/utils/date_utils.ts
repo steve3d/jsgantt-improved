@@ -2,7 +2,7 @@
 /**
  * DATES
  */
-export const getMinDate = function (pList, pFormat, pMinDate) {
+export function getMinDate(pList, pFormat, pMinDate) {
   let vDate = new Date();
   if (pList.length <= 0) return pMinDate || vDate;
 
@@ -46,9 +46,9 @@ export const getMinDate = function (pList, pFormat, pMinDate) {
   if (pFormat == 'hour') vDate.setMinutes(0, 0);
   else vDate.setHours(0, 0, 0);
   return (vDate);
-};
+}
 
-export const getMaxDate = function (pList, pFormat, pMaxDate) {
+export function getMaxDate (pList, pFormat, pMaxDate) {
   let vDate = new Date();
 
   if (pList.length <= 0) return pMaxDate || vDate;
@@ -95,9 +95,9 @@ export const getMaxDate = function (pList, pFormat, pMaxDate) {
     while (vDate.getHours() % 6 != 5) vDate.setHours(vDate.getHours() + 1);
   }
   return (vDate);
-};
+}
 
-export const coerceDate = function (date) {
+export function coerceDate (date) {
   if (date instanceof Date) {
     return date;
   } else {
@@ -108,7 +108,7 @@ export const coerceDate = function (date) {
   }
 }
 
-export const parseDateStr = function (pDateStr, pFormatStr) {
+export function parseDateStr(pDateStr, pFormatStr) {
   let vDate = new Date();
   let vDateParts = pDateStr.split(/[^0-9]/);
   if (pDateStr.length >= 10 && vDateParts.length >= 3) {
@@ -130,9 +130,9 @@ export const parseDateStr = function (pDateStr, pFormatStr) {
     }
   }
   return (vDate);
-};
+}
 
-export const formatDateStr = function (pDate, pDateFormatArr, pL) {
+export function formatDateStr(pDate, pDateFormatArr, pL) {
   // Fix on issue #303 - getXMLTask is passing null as pDates
   if (!pDate) {
     return;
@@ -141,10 +141,10 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
 
   let vYear2Str = pDate.getFullYear().toString().substring(2, 4);
   let vMonthStr = (pDate.getMonth() + 1) + '';
-  let vMonthArr = new Array(pL['january'], pL['february'], pL['march'], pL['april'], pL['maylong'], pL['june'], pL['july'], pL['august'], pL['september'], pL['october'], pL['november'], pL['december']);
-  let vDayArr = new Array(pL['sunday'], pL['monday'], pL['tuesday'], pL['wednesday'], pL['thursday'], pL['friday'], pL['saturday']);
-  let vMthArr = new Array(pL['jan'], pL['feb'], pL['mar'], pL['apr'], pL['may'], pL['jun'], pL['jul'], pL['aug'], pL['sep'], pL['oct'], pL['nov'], pL['dec']);
-  let vDyArr = new Array(pL['sun'], pL['mon'], pL['tue'], pL['wed'], pL['thu'], pL['fri'], pL['sat']);
+  let vMonthArr = [pL['january'], pL['february'], pL['march'], pL['april'], pL['maylong'], pL['june'], pL['july'], pL['august'], pL['september'], pL['october'], pL['november'], pL['december']];
+  let vDayArr = [pL['sunday'], pL['monday'], pL['tuesday'], pL['wednesday'], pL['thursday'], pL['friday'], pL['saturday']];
+  let vMthArr = [pL['jan'], pL['feb'], pL['mar'], pL['apr'], pL['may'], pL['jun'], pL['jul'], pL['aug'], pL['sep'], pL['oct'], pL['nov'], pL['dec']];
+  let vDyArr = [pL['sun'], pL['mon'], pL['tue'], pL['wed'], pL['thu'], pL['fri'], pL['sat']];
 
   for (let i = 0; i < pDateFormatArr.length; i++) {
     switch (pDateFormatArr[i]) {
@@ -230,11 +230,10 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
     }
   }
 
-  console.log(pDate, pDateFormatArr);
   return vDateStr;
-};
+}
 
-export const parseDateFormatStr = function (pFormatStr) {
+export function parseDateFormatStr(pFormatStr) {
   let vComponantStr = '';
   let vCurrChar = '';
   let vSeparators = new RegExp('[\/\ -.,\'":]');
@@ -258,16 +257,15 @@ export const parseDateFormatStr = function (pFormatStr) {
 
   }
 
-  console.log(pFormatStr, vDateFormatArray);
   return vDateFormatArray;
-};
+}
 
 /**
  * We have to compare against the monday of the first week of the year containing 04 jan *not* 01/01
  * 60*60*24*1000=86400000
  * @param pDate 
  */
-export const getIsoWeek = function (pDate) {
+export function getIsoWeek (pDate) {
   let dayMiliseconds = 86400000;
   let keyDay = new Date(pDate.getFullYear(), 0, 4, 0, 0, 0);
   let keyDayOfWeek = (keyDay.getDay() == 0) ? 6 : keyDay.getDay() - 1; // define monday as 0
@@ -285,4 +283,4 @@ export const getIsoWeek = function (pDate) {
   if (thisWeek <= 0) thisWeek = getIsoWeek(new Date(pDate.getFullYear() - 1, 11, 31, 0, 0, 0));
   else if (thisWeek == 53 && (new Date(pDate.getFullYear(), 0, 1, 0, 0, 0)).getDay() != 4 && (new Date(pDate.getFullYear(), 11, 31, 0, 0, 0)).getDay() != 4) thisWeek = 1;
   return thisWeek;
-};
+}

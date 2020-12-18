@@ -1,12 +1,15 @@
+import { GanttChart } from './chart';
 import { TaskItem } from "./task";
 import { makeRequest } from "./utils/general_utils";
 
 /**
- * 
- * @param pFile 
- * @param pGanttlet 
+ *
+ * @param pFile
+ * @param pGanttVar
+ * @param vDebug
+ * @param redrawAfter
  */
-export const parseJSON = async function (pFile, pGanttVar, vDebug = false, redrawAfter = true) {
+export async function parseJSON(pFile: string, pGanttVar: GanttChart, vDebug = false, redrawAfter = true) {
   const jsonObj = await makeRequest(pFile, true, true);
   let bd;
   if (vDebug) {
@@ -22,13 +25,13 @@ export const parseJSON = async function (pFile, pGanttVar, vDebug = false, redra
     pGanttVar.Draw();
   }
   return jsonObj;
-};
+}
 
-export const parseJSONString = function (pStr, pGanttVar) {
+export function parseJSONString (pStr: string, pGanttVar: GanttChart) {
   addJSONTask(pGanttVar, JSON.parse(pStr));
-};
+}
 
-export const addJSONTask = function (pGanttVar, pJsonObj) {
+export function addJSONTask (pGanttVar: GanttChart, pJsonObj: any[]) {
   for (let index = 0; index < pJsonObj.length; index++) {
     let id;
     let name;
@@ -148,4 +151,4 @@ export const addJSONTask = function (pGanttVar, pJsonObj) {
       additionalObject));
     //}
   }
-};
+}
