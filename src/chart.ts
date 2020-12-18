@@ -156,6 +156,7 @@ export class GanttChart {
     chartRowDateToX: any;
 
     private currentLang: string;
+    private scrollPos: {x: number, y: number};
 
     constructor(public vDiv: HTMLElement, public vFormat: 'hour' | 'day' | 'week' | 'month' | 'quarter') {
         this.vDivId = vDiv?.id ?? null;
@@ -783,7 +784,7 @@ export class GanttChart {
     };
 
     AddTaskItemObject(object: TaskItemObject) {
-        this.AddTaskItem(new TaskItem(
+        const item = new TaskItem(
             object.pID, // public vID: number,
             object.pName, // public vName: string,
             object.pStart, // pStart: Date | string,
@@ -806,7 +807,11 @@ export class GanttChart {
             null, // public vDuration?: string,
             null, // public vBarText?: string,
             object// public vDataObject?: any
-        ));
+        );
+
+        item.vSortIdx = object.pSortIdx ?? 0;
+
+        this.AddTaskItem(item);
     };
 
 

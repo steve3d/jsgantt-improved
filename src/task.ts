@@ -21,9 +21,8 @@ export interface TaskItemObject {
   pCaption?: string;
   pCost?: number;
   pNotes?: string;
+  pSortIdx?: number;
 }
-
-declare let g: any;
 
 // function to open window to display task link
 export function taskLink (pRef, pWidth, pHeight) {
@@ -63,38 +62,6 @@ export function sortTasks (pList, pID, pIdx) {
     }
   }
   return sortIdx;
-}
-
-export function TaskItemObject (object) {
-  const pDataObject = {...object};
-
-  internalProperties.forEach(property => {
-    delete pDataObject[property];
-  });
-
-  return new TaskItem(object.pID,
-    object.pName,
-    object.pStart,
-    object.pEnd,
-    object.pClass,
-    object.pLink,
-    object.pMile,
-    object.pRes,
-    object.pComp,
-    object.pGroup,
-    object.pParent,
-    object.pOpen,
-    object.pDepend,
-    object.pCaption,
-    object.pNotes,
-    object.pGantt,
-    object.pCost,
-    object.pPlanStart,
-    object.pPlanEnd,
-    object.pDuration,
-    object.pBarText,
-    object
-  );
 }
 
 export class TaskItem {
@@ -499,28 +466,6 @@ export function createTaskInfo (pTask, templateStrOrFn = null) {
   }
 
   return {component: vTaskInfoBox, callback};
-}
-
-
-export function AddTaskItem (value) {
-  let vExists = false;
-  for (let i = 0; i < this.vTaskList.length; i++) {
-    if (this.vTaskList[i].vID == value.vID) {
-      i = this.vTaskList.length;
-      vExists = true;
-    }
-  }
-  if (!vExists) {
-    this.vTaskList.push(value);
-    this.vProcessNeeded = true;
-  }
-}
-
-export function AddTaskItemObject (object) {
-  if (!object.pGantt) {
-    object.pGantt = this;
-  }
-  return this.AddTaskItem(TaskItemObject(object));
 }
 
 // Recursively process task tree ... set min, max dates of parent tasks and identfy task level.

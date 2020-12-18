@@ -1,5 +1,5 @@
+import { TaskItem } from './task';
 import { formatDateStr } from "./utils/date_utils";
-import { AddTaskItemObject } from "./task";
 import { addListenerInputCell, addListenerClickCell } from "./events";
 import { newNode, makeInput } from "./utils/draw_utils";
 
@@ -120,8 +120,8 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
     const button = "<button>+</button>";
     vTmpDiv = newNode(vTmpCell, 'div', null, null, button);
 
-    const callback = (task, e) => {
-      AddTaskItemObject({
+    const callback = (task: TaskItem, e) => {
+      task.vGantt.AddTaskItemObject({
         vParent: task.vParent
       });
     }

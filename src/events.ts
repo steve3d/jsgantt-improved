@@ -286,10 +286,10 @@ export function addFormatListeners(pGanttChart, pFormat, pObj) {
 }
 
 export function addScrollListeners(pGanttChart) {
-    addListener('resize', function () {
+    addListener('resize', function (e) {
         pGanttChart.getChartHead().scrollLeft = pGanttChart.getChartBody().scrollLeft;
     }, window);
-    addListener('resize', function () {
+    addListener('resize', function (e) {
         pGanttChart.getListBody().scrollTop = pGanttChart.getChartBody().scrollTop;
     }, window);
 }

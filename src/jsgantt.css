@@ -270,6 +270,7 @@ span.gfoldercollapse {
 .ggroupcaption,
 .gcaption {
   right: -126px;
+  font-size: 10px;
 }
 
 /* Task complete %age bar shared attributes */
