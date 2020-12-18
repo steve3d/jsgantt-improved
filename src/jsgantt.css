@@ -57,6 +57,7 @@ div.gantt {
   background-color: #ffffff;
   font-weight: bold;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .gtaskcellwkend,
