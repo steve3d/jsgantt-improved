@@ -78,18 +78,18 @@ export const CalcTaskXY = function () {
 
   for (let i = 0; i < vList.length; i++) {
     vID = vList[i].vID;
-    vBarDiv = vList[i].getBarDiv();
-    vTaskDiv = vList[i].getTaskDiv();
-    if ((vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)) {
-      vParDiv = vList[i].getParItem().getChildRow();
+    vBarDiv = vList[i].vBarDiv;
+    vTaskDiv = vList[i].vTaskDiv;
+    if ((vList[i].vParItem && vList[i].vParItem.vGroup == 2)) {
+      vParDiv = vList[i].vParItem.vChildRow;
     }
-    else vParDiv = vList[i].getChildRow();
+    else vParDiv = vList[i].vChildRow;
 
     if (vBarDiv) {
-      vList[i].setStartX(vBarDiv.offsetLeft + 1);
-      vList[i].setStartY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
-      vList[i].setEndX(vBarDiv.offsetLeft + vBarDiv.offsetWidth + 1);
-      vList[i].setEndY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
+      vList[i].x1 = vBarDiv.offsetLeft + 1;
+      vList[i].y1 = vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1;
+      vList[i].x2 = vBarDiv.offsetLeft + vBarDiv.offsetWidth + 1;
+      vList[i].y2 = vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1;
     }
   }
 };

@@ -52,31 +52,31 @@ export const DrawDependencies = function (vDebug = false) {
 
     let vList = this.getList();
     for (let i = 0; i < vList.length; i++) {
-      let vDepend = vList[i].getDepend();
-      let vDependType = vList[i].getDepType();
+      let vDepend = vList[i].vDepend;
+      let vDependType = vList[i].vDependType;
       let n = vDepend.length;
 
-      if (n > 0 && vList[i].getVisible() == 1) {
+      if (n > 0 && vList[i].vVisible) {
         for (let k = 0; k < n; k++) {
           let vTask = this.getArrayLocationByID(vDepend[k]);
-          if (vTask >= 0 && vList[vTask].getGroup() != 2) {
-            if (vList[vTask].getVisible() == 1) {
+          if (vTask >= 0 && vList[vTask].vGroup != 2) {
+            if (vList[vTask].vVisible) {
               if (vDebug) {
                 console.info(`init drawDependency `, vList[vTask].vID, new Date());
               }
               var cssClass = 'gDepId' + vList[vTask].vID +
                 ' ' + 'gDepNextId' + vList[i].vID;
 
-              var dependedData = vList[vTask].getDataObject();
-              var nextDependedData = vList[i].getDataObject();
+              var dependedData = vList[vTask].vDataObject;
+              var nextDependedData = vList[i].vDataObject;
               if (dependedData && dependedData.pID && nextDependedData && nextDependedData.pID) {
                 cssClass += ' gDepDataId' + dependedData.pID + ' ' + 'gDepNextDataId' + nextDependedData.pID;
               }
 
-              if (vDependType[k] == 'SS') this.drawDependency(vList[vTask].getStartX() - 1, vList[vTask].getStartY(), vList[i].getStartX() - 1, vList[i].getStartY(), 'SS', cssClass + ' gDepSS');
-              else if (vDependType[k] == 'FF') this.drawDependency(vList[vTask].getEndX(), vList[vTask].getEndY(), vList[i].getEndX(), vList[i].getEndY(), 'FF', cssClass + ' gDepFF');
-              else if (vDependType[k] == 'SF') this.drawDependency(vList[vTask].getStartX() - 1, vList[vTask].getStartY(), vList[i].getEndX(), vList[i].getEndY(), 'SF', cssClass + ' gDepSF');
-              else if (vDependType[k] == 'FS') this.drawDependency(vList[vTask].getEndX(), vList[vTask].getEndY(), vList[i].getStartX() - 1, vList[i].getStartY(), 'FS', cssClass + ' gDepFS');
+              if (vDependType[k] == 'SS') this.drawDependency(vList[vTask].x1 - 1, vList[vTask].y1, vList[i].x1 - 1, vList[i].y1, 'SS', cssClass + ' gDepSS');
+              else if (vDependType[k] == 'FF') this.drawDependency(vList[vTask].x2, vList[vTask].y2, vList[i].x2, vList[i].y2, 'FF', cssClass + ' gDepFF');
+              else if (vDependType[k] == 'SF') this.drawDependency(vList[vTask].x1 - 1, vList[vTask].y1, vList[i].x2, vList[i].y2, 'SF', cssClass + ' gDepSF');
+              else if (vDependType[k] == 'FS') this.drawDependency(vList[vTask].x2, vList[vTask].y2, vList[i].x1 - 1, vList[i].y1, 'FS', cssClass + ' gDepFS');
             }
           }
         }

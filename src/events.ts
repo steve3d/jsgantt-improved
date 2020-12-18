@@ -11,23 +11,23 @@ export const folder = function (pID, ganttObj) {
 
   for (let i = 0; i < vList.length; i++) {
     if (vList[i].vID == pID) {
-      if (vList[i].getOpen() == 1) {
-        vList[i].setOpen(0);
+      if (vList[i].vOpen) {
+        vList[i].vOpen = false;
         hide(pID, ganttObj);
 
         if (isIE())
-          vList[i].getGroupSpan().innerText = '+';
+          vList[i].vGroupSpan.innerText = '+';
         else
-          vList[i].getGroupSpan().textContent = '+';
+          vList[i].vGroupSpan.textContent = '+';
       }
       else {
-        vList[i].setOpen(1);
+        vList[i].vOpen = true;
         show(pID, 1, ganttObj);
 
         if (isIE())
-          vList[i].getGroupSpan().innerText = '-';
+          vList[i].vGroupSpan.innerText = '-';
         else
-          vList[i].getGroupSpan().textContent = '-';
+          vList[i].vGroupSpan.textContent = '-';
       }
     }
   }
@@ -48,14 +48,14 @@ export const hide = function (pID, ganttObj) {
   let vID = 0;
 
   for (let i = 0; i < vList.length; i++) {
-    if (vList[i].getParent() == pID) {
+    if (vList[i].vParent == pID) {
       vID = vList[i].vID;
       // it's unlikely but if the task list has been updated since
       // the chart was drawn some of the rows may not exist
-      if (vList[i].getListChildRow()) vList[i].getListChildRow().style.display = 'none';
-      if (vList[i].getChildRow()) vList[i].getChildRow().style.display = 'none';
-      vList[i].setVisible(0);
-      if (vList[i].getGroup()) hide(vID, ganttObj);
+      if (vList[i].vListChildRow) vList[i].vListChildRow.style.display = 'none';
+      if (vList[i].vChildRow) vList[i].vChildRow.style.display = 'none';
+      vList[i].vVisible = false;
+      if (vList[i].vGroup) hide(vID, ganttObj);
     }
   }
 };
@@ -67,33 +67,33 @@ export const show = function (pID, pTop, ganttObj) {
   let vState = '';
 
   for (let i = 0; i < vList.length; i++) {
-    if (vList[i].getParent() == pID) {
-      if (!vList[i].getParItem()) {
+    if (vList[i].vParent == pID) {
+      if (!vList[i].vParItem) {
         console.error(`Cant find parent on who event (maybe problems with Task ID and Parent Id mixes?)`);
       }
-      if (vList[i].getParItem().getGroupSpan()) {
-        if (isIE()) vState = vList[i].getParItem().getGroupSpan().innerText;
-        else vState = vList[i].getParItem().getGroupSpan().textContent;
+      if (vList[i].vParItem.vGroupSpan) {
+        if (isIE()) vState = vList[i].vParItem.vGroupSpan.innerText;
+        else vState = vList[i].vParItem.vGroupSpan.textContent;
       }
       i = vList.length;
     }
   }
 
   for (let i = 0; i < vList.length; i++) {
-    if (vList[i].getParent() == pID) {
+    if (vList[i].vParent == pID) {
       let vChgState = false;
       vID = vList[i].vID;
 
       if (pTop == 1 && vState == '+') vChgState = true;
       else if (vState == '-') vChgState = true;
-      else if (vList[i].getParItem() && vList[i].getParItem().getGroup() == 2) vList[i].setVisible(1);
+      else if (vList[i].vParItem && vList[i].vParItem.vGroup == 2) vList[i].vVisible = true;
 
       if (vChgState) {
-        if (vList[i].getListChildRow()) vList[i].getListChildRow().style.display = '';
-        if (vList[i].getChildRow()) vList[i].getChildRow().style.display = '';
-        vList[i].setVisible(1);
+        if (vList[i].vListChildRow) vList[i].vListChildRow.style.display = '';
+        if (vList[i].vChildRow) vList[i].vChildRow.style.display = '';
+        vList[i].vVisible = true;
       }
-      if (vList[i].getGroup()) show(vID, 0, ganttObj);
+      if (vList[i].vGroup) show(vID, 0, ganttObj);
     }
   }
 };

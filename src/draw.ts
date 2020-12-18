@@ -1,4 +1,4 @@
-import * as lang from './lang';
+import {lang} from './lang';
 import {
   mouseOver,
   mouseOut,
@@ -224,22 +224,22 @@ export const GanttChart = function (pDiv, pFormat) {
     let vNumRows = 0;
     for (let i = 0; i < this.vTaskList.length; i++) {
       let vBGColor;
-      if (this.vTaskList[i].getGroup() == 1) vBGColor = 'ggroupitem';
+      if (this.vTaskList[i].vGroup == 1) vBGColor = 'ggroupitem';
       else vBGColor = 'glineitem';
 
       console.log(this.vTaskList[i]);
       let vID = this.vTaskList[i].vID;
       let vTmpRow, vTmpCell;
-      if ((!(this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2)) || this.vTaskList[i].getGroup() == 2) {
-        if (this.vTaskList[i].getVisible() == 0) vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
+      if ((!(this.vTaskList[i].vParItem && this.vTaskList[i].vParItem.vGroup == 2)) || this.vTaskList[i].vGroup == 2) {
+        if (!this.vTaskList[i].vVisible) vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
         else vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor);
-        this.vTaskList[i].setListChildRow(vTmpRow);
+        this.vTaskList[i].vListChildRow = vTmpRow;
         newNode(vTmpRow, 'td', null, 'gtasklist', '\u00A0');
         const editableClass = this.vEditable ? 'gtaskname gtaskeditable' : 'gtaskname';
         vTmpCell = newNode(vTmpRow, 'td', null, editableClass);
 
         let vCellContents = '';
-        for (let j = 1; j < this.vTaskList[i].getLevel(); j++) {
+        for (let j = 1; j < this.vTaskList[i].vLevel; j++) {
           vCellContents += '\u00A0\u00A0\u00A0\u00A0';
         }
 
@@ -258,26 +258,26 @@ export const GanttChart = function (pDiv, pFormat) {
           }
         }, vTmpRow);
 
-        if (this.vTaskList[i].getGroup() == 1) {
+        if (this.vTaskList[i].vGroup == 1) {
           let vTmpDiv = newNode(vTmpCell, 'div', null, null, vCellContents);
-          let vTmpSpan = newNode(vTmpDiv, 'span', this.vDivId + 'group_' + vID, 'gfoldercollapse', (this.vTaskList[i].getOpen() == 1) ? '-' : '+');
-          this.vTaskList[i].setGroupSpan(vTmpSpan);
+          let vTmpSpan = newNode(vTmpDiv, 'span', this.vDivId + 'group_' + vID, 'gfoldercollapse', (this.vTaskList[i].vOpen) ? '-' : '+');
+          this.vTaskList[i].vGroupSpan = vTmpSpan;
           addFolderListeners(this, vTmpSpan, vID);
 
           const divTask = document.createElement('span')
-          divTask.innerHTML = '\u00A0' + this.vTaskList[i].getName()
+          divTask.innerHTML = '\u00A0' + this.vTaskList[i].vName
           vTmpDiv.appendChild(divTask);
-          // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
+          // const text = makeInput(this.vTaskList[i].vName, this.vEditable, 'text');
           // vTmpDiv.appendChild(document.createNode(text));
-          const callback = (task, e) => task.setName(e.target.value);
+          const callback = (task, e) => task.vName = e.target.value;
           addListenerInputCell(vTmpCell, this.vEventsChange, callback, this.vTaskList, i, 'taskname', this.Draw.bind(this));
           addListenerClickCell(vTmpDiv, this.vEvents, this.vTaskList[i], 'taskname');
         }
         else {
           vCellContents += '\u00A0\u00A0\u00A0\u00A0';
-          const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
+          const text = makeInput(this.vTaskList[i].vName, this.vEditable, 'text');
           let vTmpDiv = newNode(vTmpCell, 'div', null, null, vCellContents + text);
-          const callback = (task, e) => task.setName(e.target.value);
+          const callback = (task, e) => task.vName = e.target.value;
           addListenerInputCell(vTmpCell, this.vEventsChange, callback, this.vTaskList, i, 'taskname', this.Draw.bind(this));
           addListenerClickCell(vTmpCell, this.vEvents, this.vTaskList[i], 'taskname');
         }
@@ -548,26 +548,26 @@ export const GanttChart = function (pDiv, pFormat) {
 
 
       const vID = this.vTaskList[i].vID;
-      let vComb = (this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2);
+      let vComb = (this.vTaskList[i].vParItem && this.vTaskList[i].vParItem.vGroup == 2);
       let vCellFormat = '';
       let vTmpDiv = null;
       let vTmpItem = this.vTaskList[i];
       let vCaptClass = null;
       // set cell width only for first row because of table-layout:fixed
       let taskCellWidth = i === 0 ? vColWidth : null;
-      if (this.vTaskList[i].getMile() && !vComb) {
-        let vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'gmileitem gmile' + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-        this.vTaskList[i].setChildRow(vTmpRow);
-        addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+      if (this.vTaskList[i].vMile && !vComb) {
+        let vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'gmileitem gmile' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+        this.vTaskList[i].vChildRow = vTmpRow;
+        addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
 
         const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellmile', null, vColWidth, null, null, null);
 
         vTmpDiv = newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
         vTmpDiv = newNode(vTmpDiv, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, 12, vTaskLeftPx + vTaskRightPx - 6);
 
-        this.vTaskList[i].setBarDiv(vTmpDiv);
-        let vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, 12);
-        this.vTaskList[i].setTaskDiv(vTmpDiv2);
+        this.vTaskList[i].vBarDiv = vTmpDiv;
+        let vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, 12);
+        this.vTaskList[i].vTaskDiv = vTmpDiv2;
 
         if (this.vTaskList[i].getCompVal() < 100)
           vTmpDiv2.appendChild(document.createTextNode('\u25CA'));
@@ -587,28 +587,28 @@ export const GanttChart = function (pDiv, pFormat) {
 
         // Draw Group Bar which has outer div with inner group div
         // and several small divs to left and right to create angled-end indicators
-        if (this.vTaskList[i].getGroup()) {
+        if (this.vTaskList[i].vGroup) {
           vTaskWidth = (vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2) ? this.vMinGpLen * 2 : vTaskWidth; // Expand to show two end points
           vTaskWidth = (vTaskWidth < this.vMinGpLen) ? this.vMinGpLen : vTaskWidth; // expand to show one end point
 
-          const vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, ((this.vTaskList[i].getGroup() == 2) ? 'glineitem gitem' : 'ggroupitem ggroup') + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-          this.vTaskList[i].setChildRow(vTmpRow);
-          addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+          const vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, ((this.vTaskList[i].vGroup == 2) ? 'glineitem gitem' : 'ggroupitem ggroup') + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+          this.vTaskList[i].vChildRow = vTmpRow;
+          addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
 
           const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellbar', null, vColWidth, null, null);
 
           vTmpDiv = newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
-          this.vTaskList[i].setCellDiv(vTmpDiv);
-          if (this.vTaskList[i].getGroup() == 1) {
+          this.vTaskList[i].vCellDiv = vTmpDiv;
+          if (this.vTaskList[i].vGroup == 1) {
             vTmpDiv = newNode(vTmpDiv, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx);
-            this.vTaskList[i].setBarDiv(vTmpDiv);
-            const vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-            this.vTaskList[i].setTaskDiv(vTmpDiv2);
+            this.vTaskList[i].vBarDiv = vTmpDiv;
+            const vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, vTaskWidth);
+            this.vTaskList[i].vTaskDiv = vTmpDiv2;
 
-            newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].getClass() + 'complete', null, this.vTaskList[i].getCompStr());
+            newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].vClass + 'complete', null, this.vTaskList[i].getCompStr());
 
-            newNode(vTmpDiv, 'div', null, this.vTaskList[i].getClass() + 'endpointleft');
-            if (vTaskWidth >= this.vMinGpLen * 2) newNode(vTmpDiv, 'div', null, this.vTaskList[i].getClass() + 'endpointright');
+            newNode(vTmpDiv, 'div', null, this.vTaskList[i].vClass + 'endpointleft');
+            if (vTaskWidth >= this.vMinGpLen * 2) newNode(vTmpDiv, 'div', null, this.vTaskList[i].vClass + 'endpointright');
 
             vCaptClass = 'ggroupcaption';
           }
@@ -626,13 +626,13 @@ export const GanttChart = function (pDiv, pFormat) {
            */
           let vTmpDivCell, vTmpRow;
           if (vComb) {
-            vTmpDivCell = vTmpDiv = this.vTaskList[i].getParItem().getCellDiv();
+            vTmpDivCell = vTmpDiv = this.vTaskList[i].vParItem.vCellDiv;
           }
           else {
             // Draw Task Bar which has colored bar div
-            vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'glineitem gitem' + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-            this.vTaskList[i].setChildRow(vTmpRow);
-            addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+            vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'glineitem gitem' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+            this.vTaskList[i].vChildRow = vTmpRow;
+            addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
 
             const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellcolorbar', null, taskCellWidth, null, null);
             vTmpDivCell = vTmpDiv = newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
@@ -640,35 +640,35 @@ export const GanttChart = function (pDiv, pFormat) {
 
           // DRAW TASK BAR
           vTmpDiv = newNode(vTmpDiv, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx);
-          this.vTaskList[i].setBarDiv(vTmpDiv);
+          this.vTaskList[i].vBarDiv = vTmpDiv;
           let vTmpDiv2;
-          if (this.vTaskList[i].getStartVar()) {
+          if (this.vTaskList[i].vStart) {
 
             // textbar
-            vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-            if (this.vTaskList[i].getBarText()) {
-              newNode(vTmpDiv2, 'span', this.vDivId + 'tasktextbar_' + vID, 'textbar', this.vTaskList[i].getBarText(), this.vTaskList[i].getCompRestStr());
+            vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, vTaskWidth);
+            if (this.vTaskList[i].vBarText) {
+              newNode(vTmpDiv2, 'span', this.vDivId + 'tasktextbar_' + vID, 'textbar', this.vTaskList[i].vBarText, this.vTaskList[i].getCompRestStr());
             }
-            this.vTaskList[i].setTaskDiv(vTmpDiv2);
+            this.vTaskList[i].vTaskDiv = vTmpDiv2;
           }
 
 
           // PLANNED
           // If exist and one of them are different, show plan bar... show if there is no real vStart as well (just plan dates)
-          if (vTaskPlanLeftPx && ((vTaskPlanLeftPx != vTaskLeftPx || vTaskPlanRightPx != vTaskRightPx) || !this.vTaskList[i].getStartVar())) {
+          if (vTaskPlanLeftPx && ((vTaskPlanLeftPx != vTaskLeftPx || vTaskPlanRightPx != vTaskRightPx) || !this.vTaskList[i].vStart)) {
             const vTmpPlanDiv = newNode(vTmpDivCell, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer gplan', null, vTaskPlanRightPx, vTaskPlanLeftPx);
-            const vTmpPlanDiv2 = newNode(vTmpPlanDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass() + ' gplan', null, vTaskPlanRightPx);
-            this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
+            const vTmpPlanDiv2 = newNode(vTmpPlanDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass + ' gplan', null, vTaskPlanRightPx);
+            this.vTaskList[i].vPlanTaskDiv = vTmpPlanDiv2;
           }
 
           // and opaque completion div
           if (vTmpDiv2) {
-            newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].getClass() + 'complete', null, this.vTaskList[i].getCompStr());
+            newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].vClass + 'complete', null, this.vTaskList[i].getCompStr());
           }
 
           // caption
-          if (vComb) vTmpItem = this.vTaskList[i].getParItem();
-          if (!vComb || (vComb && this.vTaskList[i].getParItem().getEnd() == this.vTaskList[i].getEnd())) vCaptClass = 'gcaption';
+          if (vComb) vTmpItem = this.vTaskList[i].vParItem;
+          if (!vComb || (vComb && this.vTaskList[i].vParItem.getEnd() == this.vTaskList[i].getEnd())) vCaptClass = 'gcaption';
 
           // Background cells
           if (!vSingleCell && !vComb && vTmpRow) {
@@ -680,8 +680,8 @@ export const GanttChart = function (pDiv, pFormat) {
       if (this.getCaptionType() && vCaptClass !== null) {
         let vCaptionStr: any;
         switch (this.getCaptionType()) {
-          case 'Caption': vCaptionStr = vTmpItem.getCaption(); break;
-          case 'Resource': vCaptionStr = vTmpItem.getResource(); break;
+          case 'Caption': vCaptionStr = vTmpItem.vCaption; break;
+          case 'Resource': vCaptionStr = vTmpItem.vRes; break;
           case 'Duration': vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]); break;
           case 'Complete': vCaptionStr = vTmpItem.getCompStr(); break;
         }
@@ -689,18 +689,18 @@ export const GanttChart = function (pDiv, pFormat) {
       }
 
       // Add Task Info div for tooltip
-      if (this.vTaskList[i].getTaskDiv() && vTmpDiv) {
+      if (this.vTaskList[i].vTaskDiv && vTmpDiv) {
         const vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'tt' + vID, null, null, null, null, 'none');
         const { component, callback } = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate);
         vTmpDiv2.appendChild(component);
-        addTooltipListeners(this, this.vTaskList[i].getTaskDiv(), vTmpDiv2, callback);
+        addTooltipListeners(this, this.vTaskList[i].vTaskDiv, vTmpDiv2, callback);
       }
       // Add Plan Task Info div for tooltip
-      if (this.vTaskList[i].getPlanTaskDiv() && vTmpDiv) {
+      if (this.vTaskList[i].vPlanTaskDiv && vTmpDiv) {
         const vTmpDiv2 = newNode(vTmpDiv, 'div', this.vDivId + 'tt' + vID, null, null, null, null, 'none');
         const { component, callback } = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate);
         vTmpDiv2.appendChild(component);
-        addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
+        addTooltipListeners(this, this.vTaskList[i].vPlanTaskDiv, vTmpDiv2, callback);
       }
     }
 

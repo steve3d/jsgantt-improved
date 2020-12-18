@@ -10,7 +10,7 @@ exports.JSGantt = jsGantt.JSGantt;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GanttChart = void 0;
-var lang = require("./lang");
+var lang_1 = require("./lang");
 var events_1 = require("./events");
 var general_utils_1 = require("./utils/general_utils");
 var task_1 = require("./task");
@@ -130,8 +130,8 @@ var GanttChart = function (pDiv, pFormat) {
     this.vQuarterColWidth = 18;
     this.vRowHeight = 20;
     this.vTodayPx = -1;
-    this.vLangs = lang;
-    this.vLang = navigator.language && navigator.language in lang ? navigator.language : 'en';
+    this.vLangs = lang_1.lang;
+    this.vLang = navigator.language && navigator.language in lang_1.lang ? navigator.language : 'en';
     this.vChartBody = null;
     this.vChartHead = null;
     this.vListBody = null;
@@ -204,24 +204,24 @@ var GanttChart = function (pDiv, pFormat) {
         var vNumRows = 0;
         var _loop_1 = function (i) {
             var vBGColor = void 0;
-            if (this_1.vTaskList[i].getGroup() == 1)
+            if (this_1.vTaskList[i].vGroup == 1)
                 vBGColor = 'ggroupitem';
             else
                 vBGColor = 'glineitem';
             console.log(this_1.vTaskList[i]);
             var vID = this_1.vTaskList[i].vID;
             var vTmpRow_1, vTmpCell_1 = void 0;
-            if ((!(this_1.vTaskList[i].getParItem() && this_1.vTaskList[i].getParItem().getGroup() == 2)) || this_1.vTaskList[i].getGroup() == 2) {
-                if (this_1.vTaskList[i].getVisible() == 0)
+            if ((!(this_1.vTaskList[i].vParItem && this_1.vTaskList[i].vParItem.vGroup == 2)) || this_1.vTaskList[i].vGroup == 2) {
+                if (!this_1.vTaskList[i].vVisible)
                     vTmpRow_1 = draw_utils_1.newNode(vTmpContentTBody, 'tr', this_1.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
                 else
                     vTmpRow_1 = draw_utils_1.newNode(vTmpContentTBody, 'tr', this_1.vDivId + 'child_' + vID, 'gname ' + vBGColor);
-                this_1.vTaskList[i].setListChildRow(vTmpRow_1);
+                this_1.vTaskList[i].vListChildRow = vTmpRow_1;
                 draw_utils_1.newNode(vTmpRow_1, 'td', null, 'gtasklist', '\u00A0');
                 var editableClass = this_1.vEditable ? 'gtaskname gtaskeditable' : 'gtaskname';
                 vTmpCell_1 = draw_utils_1.newNode(vTmpRow_1, 'td', null, editableClass);
                 var vCellContents = '';
-                for (var j = 1; j < this_1.vTaskList[i].getLevel(); j++) {
+                for (var j = 1; j < this_1.vTaskList[i].vLevel; j++) {
                     vCellContents += '\u00A0\u00A0\u00A0\u00A0';
                 }
                 var task_2 = this_1.vTaskList[i];
@@ -239,25 +239,25 @@ var GanttChart = function (pDiv, pFormat) {
                         }
                     }
                 }, vTmpRow_1);
-                if (this_1.vTaskList[i].getGroup() == 1) {
+                if (this_1.vTaskList[i].vGroup == 1) {
                     var vTmpDiv = draw_utils_1.newNode(vTmpCell_1, 'div', null, null, vCellContents);
-                    var vTmpSpan = draw_utils_1.newNode(vTmpDiv, 'span', this_1.vDivId + 'group_' + vID, 'gfoldercollapse', (this_1.vTaskList[i].getOpen() == 1) ? '-' : '+');
-                    this_1.vTaskList[i].setGroupSpan(vTmpSpan);
+                    var vTmpSpan = draw_utils_1.newNode(vTmpDiv, 'span', this_1.vDivId + 'group_' + vID, 'gfoldercollapse', (this_1.vTaskList[i].vOpen) ? '-' : '+');
+                    this_1.vTaskList[i].vGroupSpan = vTmpSpan;
                     events_1.addFolderListeners(this_1, vTmpSpan, vID);
                     var divTask = document.createElement('span');
-                    divTask.innerHTML = '\u00A0' + this_1.vTaskList[i].getName();
+                    divTask.innerHTML = '\u00A0' + this_1.vTaskList[i].vName;
                     vTmpDiv.appendChild(divTask);
-                    // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
+                    // const text = makeInput(this.vTaskList[i].vName, this.vEditable, 'text');
                     // vTmpDiv.appendChild(document.createNode(text));
-                    var callback = function (task, e) { return task.setName(e.target.value); };
+                    var callback = function (task, e) { return task.vName = e.target.value; };
                     events_1.addListenerInputCell(vTmpCell_1, this_1.vEventsChange, callback, this_1.vTaskList, i, 'taskname', this_1.Draw.bind(this_1));
                     events_1.addListenerClickCell(vTmpDiv, this_1.vEvents, this_1.vTaskList[i], 'taskname');
                 }
                 else {
                     vCellContents += '\u00A0\u00A0\u00A0\u00A0';
-                    var text = draw_utils_1.makeInput(this_1.vTaskList[i].getName(), this_1.vEditable, 'text');
+                    var text = draw_utils_1.makeInput(this_1.vTaskList[i].vName, this_1.vEditable, 'text');
                     var vTmpDiv = draw_utils_1.newNode(vTmpCell_1, 'div', null, null, vCellContents + text);
-                    var callback = function (task, e) { return task.setName(e.target.value); };
+                    var callback = function (task, e) { return task.vName = e.target.value; };
                     events_1.addListenerInputCell(vTmpCell_1, this_1.vEventsChange, callback, this_1.vTaskList, i, 'taskname', this_1.Draw.bind(this_1));
                     events_1.addListenerClickCell(vTmpCell_1, this_1.vEvents, this_1.vTaskList[i], 'taskname');
                 }
@@ -499,23 +499,23 @@ var GanttChart = function (pDiv, pFormat) {
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
             }
             var vID = this.vTaskList[i].vID;
-            var vComb = (this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2);
+            var vComb = (this.vTaskList[i].vParItem && this.vTaskList[i].vParItem.vGroup == 2);
             var vCellFormat = '';
             var vTmpDiv_1 = null;
             var vTmpItem = this.vTaskList[i];
             var vCaptClass = null;
             // set cell width only for first row because of table-layout:fixed
             var taskCellWidth = i === 0 ? vColWidth : null;
-            if (this.vTaskList[i].getMile() && !vComb) {
-                var vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'gmileitem gmile' + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-                this.vTaskList[i].setChildRow(vTmpRow);
-                events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+            if (this.vTaskList[i].vMile && !vComb) {
+                var vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'gmileitem gmile' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+                this.vTaskList[i].vChildRow = vTmpRow;
+                events_1.addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellmile', null, vColWidth, null, null, null);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, 12, vTaskLeftPx_1 + vTaskRightPx - 6);
-                this.vTaskList[i].setBarDiv(vTmpDiv_1);
-                var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, 12);
-                this.vTaskList[i].setTaskDiv(vTmpDiv2);
+                this.vTaskList[i].vBarDiv = vTmpDiv_1;
+                var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, 12);
+                this.vTaskList[i].vTaskDiv = vTmpDiv2;
                 if (this.vTaskList[i].getCompVal() < 100)
                     vTmpDiv2.appendChild(document.createTextNode('\u25CA'));
                 else {
@@ -532,24 +532,24 @@ var GanttChart = function (pDiv, pFormat) {
                 var vTaskWidth = vTaskRightPx;
                 // Draw Group Bar which has outer div with inner group div
                 // and several small divs to left and right to create angled-end indicators
-                if (this.vTaskList[i].getGroup()) {
+                if (this.vTaskList[i].vGroup) {
                     vTaskWidth = (vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2) ? this.vMinGpLen * 2 : vTaskWidth; // Expand to show two end points
                     vTaskWidth = (vTaskWidth < this.vMinGpLen) ? this.vMinGpLen : vTaskWidth; // expand to show one end point
-                    var vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, ((this.vTaskList[i].getGroup() == 2) ? 'glineitem gitem' : 'ggroupitem ggroup') + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-                    this.vTaskList[i].setChildRow(vTmpRow);
-                    events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+                    var vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, ((this.vTaskList[i].vGroup == 2) ? 'glineitem gitem' : 'ggroupitem ggroup') + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+                    this.vTaskList[i].vChildRow = vTmpRow;
+                    events_1.addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
                     var vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellbar', null, vColWidth, null, null);
                     vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
-                    this.vTaskList[i].setCellDiv(vTmpDiv_1);
-                    if (this.vTaskList[i].getGroup() == 1) {
+                    this.vTaskList[i].vCellDiv = vTmpDiv_1;
+                    if (this.vTaskList[i].vGroup == 1) {
                         vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx_1);
-                        this.vTaskList[i].setBarDiv(vTmpDiv_1);
-                        var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-                        this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                        draw_utils_1.newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].getClass() + 'complete', null, this.vTaskList[i].getCompStr());
-                        draw_utils_1.newNode(vTmpDiv_1, 'div', null, this.vTaskList[i].getClass() + 'endpointleft');
+                        this.vTaskList[i].vBarDiv = vTmpDiv_1;
+                        var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, vTaskWidth);
+                        this.vTaskList[i].vTaskDiv = vTmpDiv2;
+                        draw_utils_1.newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].vClass + 'complete', null, this.vTaskList[i].getCompStr());
+                        draw_utils_1.newNode(vTmpDiv_1, 'div', null, this.vTaskList[i].vClass + 'endpointleft');
                         if (vTaskWidth >= this.vMinGpLen * 2)
-                            draw_utils_1.newNode(vTmpDiv_1, 'div', null, this.vTaskList[i].getClass() + 'endpointright');
+                            draw_utils_1.newNode(vTmpDiv_1, 'div', null, this.vTaskList[i].vClass + 'endpointright');
                         vCaptClass = 'ggroupcaption';
                     }
                     if (!vSingleCell && !vComb) {
@@ -563,43 +563,43 @@ var GanttChart = function (pDiv, pFormat) {
                      */
                     var vTmpDivCell = void 0, vTmpRow = void 0;
                     if (vComb) {
-                        vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].getParItem().getCellDiv();
+                        vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].vParItem.vCellDiv;
                     }
                     else {
                         // Draw Task Bar which has colored bar div
-                        vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'glineitem gitem' + this.vFormat, null, null, null, ((this.vTaskList[i].getVisible() == 0) ? 'none' : null));
-                        this.vTaskList[i].setChildRow(vTmpRow);
-                        events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+                        vTmpRow = draw_utils_1.newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'glineitem gitem' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
+                        this.vTaskList[i].vChildRow = vTmpRow;
+                        events_1.addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
                         var vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellcolorbar', null, taskCellWidth, null, null);
                         vTmpDivCell = vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
                     }
                     // DRAW TASK BAR
                     vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer', null, vTaskWidth, vTaskLeftPx_1);
-                    this.vTaskList[i].setBarDiv(vTmpDiv_1);
+                    this.vTaskList[i].vBarDiv = vTmpDiv_1;
                     var vTmpDiv2 = void 0;
-                    if (this.vTaskList[i].getStartVar()) {
+                    if (this.vTaskList[i].vStart) {
                         // textbar
-                        vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-                        if (this.vTaskList[i].getBarText()) {
-                            draw_utils_1.newNode(vTmpDiv2, 'span', this.vDivId + 'tasktextbar_' + vID, 'textbar', this.vTaskList[i].getBarText(), this.vTaskList[i].getCompRestStr());
+                        vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass, null, vTaskWidth);
+                        if (this.vTaskList[i].vBarText) {
+                            draw_utils_1.newNode(vTmpDiv2, 'span', this.vDivId + 'tasktextbar_' + vID, 'textbar', this.vTaskList[i].vBarText, this.vTaskList[i].getCompRestStr());
                         }
-                        this.vTaskList[i].setTaskDiv(vTmpDiv2);
+                        this.vTaskList[i].vTaskDiv = vTmpDiv2;
                     }
                     // PLANNED
                     // If exist and one of them are different, show plan bar... show if there is no real vStart as well (just plan dates)
-                    if (vTaskPlanLeftPx && ((vTaskPlanLeftPx != vTaskLeftPx_1 || vTaskPlanRightPx != vTaskRightPx) || !this.vTaskList[i].getStartVar())) {
+                    if (vTaskPlanLeftPx && ((vTaskPlanLeftPx != vTaskLeftPx_1 || vTaskPlanRightPx != vTaskRightPx) || !this.vTaskList[i].vStart)) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, 'div', this.vDivId + 'bardiv_' + vID, 'gtaskbarcontainer gplan', null, vTaskPlanRightPx, vTaskPlanLeftPx);
-                        var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].getClass() + ' gplan', null, vTaskPlanRightPx);
-                        this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
+                        var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, 'div', this.vDivId + 'taskbar_' + vID, this.vTaskList[i].vClass + ' gplan', null, vTaskPlanRightPx);
+                        this.vTaskList[i].vPlanTaskDiv = vTmpPlanDiv2;
                     }
                     // and opaque completion div
                     if (vTmpDiv2) {
-                        draw_utils_1.newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].getClass() + 'complete', null, this.vTaskList[i].getCompStr());
+                        draw_utils_1.newNode(vTmpDiv2, 'div', this.vDivId + 'complete_' + vID, this.vTaskList[i].vClass + 'complete', null, this.vTaskList[i].getCompStr());
                     }
                     // caption
                     if (vComb)
-                        vTmpItem = this.vTaskList[i].getParItem();
-                    if (!vComb || (vComb && this.vTaskList[i].getParItem().getEnd() == this.vTaskList[i].getEnd()))
+                        vTmpItem = this.vTaskList[i].vParItem;
+                    if (!vComb || (vComb && this.vTaskList[i].vParItem.getEnd() == this.vTaskList[i].getEnd()))
                         vCaptClass = 'gcaption';
                     // Background cells
                     if (!vSingleCell && !vComb && vTmpRow) {
@@ -611,10 +611,10 @@ var GanttChart = function (pDiv, pFormat) {
                 var vCaptionStr = void 0;
                 switch (this.getCaptionType()) {
                     case 'Caption':
-                        vCaptionStr = vTmpItem.getCaption();
+                        vCaptionStr = vTmpItem.vCaption;
                         break;
                     case 'Resource':
-                        vCaptionStr = vTmpItem.getResource();
+                        vCaptionStr = vTmpItem.vRes;
                         break;
                     case 'Duration':
                         vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]);
@@ -626,18 +626,18 @@ var GanttChart = function (pDiv, pFormat) {
                 draw_utils_1.newNode(vTmpDiv_1, 'div', null, vCaptClass, vCaptionStr, 120, (vCaptClass == 'gmilecaption') ? 12 : 0);
             }
             // Add Task Info div for tooltip
-            if (this.vTaskList[i].getTaskDiv() && vTmpDiv_1) {
+            if (this.vTaskList[i].vTaskDiv && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'tt' + vID, null, null, null, null, 'none');
                 var _a = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _a.component, callback = _a.callback;
                 vTmpDiv2.appendChild(component);
-                events_1.addTooltipListeners(this, this.vTaskList[i].getTaskDiv(), vTmpDiv2, callback);
+                events_1.addTooltipListeners(this, this.vTaskList[i].vTaskDiv, vTmpDiv2, callback);
             }
             // Add Plan Task Info div for tooltip
-            if (this.vTaskList[i].getPlanTaskDiv() && vTmpDiv_1) {
+            if (this.vTaskList[i].vPlanTaskDiv && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, 'div', this.vDivId + 'tt' + vID, null, null, null, null, 'none');
                 var _b = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _b.component, callback = _b.callback;
                 vTmpDiv2.appendChild(component);
-                events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
+                events_1.addTooltipListeners(this, this.vTaskList[i].vPlanTaskDiv, vTmpDiv2, callback);
             }
         }
         // Include the footer with the days/week/month...
@@ -876,9 +876,9 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
     var vTmpCell, vTmpDiv;
     if ('vShowRes' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gres');
-        var text = draw_utils_1.makeInput(vTaskList[i].getResource(), vEditable, 'resource', vTaskList[i].getResource(), vResources);
+        var text = draw_utils_1.makeInput(vTaskList[i].vRes, vEditable, 'resource', vTaskList[i].vRes, vResources);
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setResource(e.target.value); };
+        var callback = function (task, e) { return task.vRes = e.target.value; };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'res', Draw, 'change');
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'res');
     }
@@ -886,7 +886,7 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gdur');
         var text = draw_utils_1.makeInput(vTaskList[i].getDuration(vFormat, vLangs[vLang]), vEditable, 'text', vTaskList[i].getDuration());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setDuration(e.target.value); };
+        var callback = function (task, e) { return task.vDuration = e.target.value; };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'dur', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'dur');
     }
@@ -894,14 +894,14 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gcomp');
         var text = draw_utils_1.makeInput(vTaskList[i].getCompStr(), vEditable, 'percentage', vTaskList[i].getCompVal());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { task.setComp(e.target.value); task.setCompVal(e.target.value); };
+        var callback = function (task, e) { task.vComp = e.target.value; task.vCompVal = e.target.value; };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'comp', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'comp');
     }
     if ('vShowStartDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gstartdate');
-        var v = date_utils_1.formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang]);
-        var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getStartVar());
+        var v = date_utils_1.formatDateStr(vTaskList[i].vStart, vDateTaskTableDisplayFormat, vLangs[vLang]);
+        var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].vStart);
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = function (task, e) { return task.setStart(e.target.value); };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'start', Draw);
@@ -909,8 +909,8 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
     }
     if ('vShowEndDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'genddate');
-        var v = date_utils_1.formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang]);
-        var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getEndVar());
+        var v = date_utils_1.formatDateStr(vTaskList[i].vEnd, vDateTaskTableDisplayFormat, vLangs[vLang]);
+        var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].vEnd);
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = function (task, e) { return task.setEnd(e.target.value); };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'end', Draw);
@@ -930,15 +930,15 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
         var v = vTaskList[i].getPlanEnd() ? date_utils_1.formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang]) : '';
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setPlanEnd(e.target.value); };
+        var callback = function (task, e) { return task.planEnd = e.target.value; };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'planend');
     }
     if ('vShowCost' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gcost');
-        var text = draw_utils_1.makeInput(vTaskList[i].getCost(), vEditable, 'cost');
+        var text = draw_utils_1.makeInput(vTaskList[i].vCost, vEditable, 'cost');
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setCost(e.target.value); };
+        var callback = function (task, e) { return task.vCost = e.target.value; };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'cost', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'cost');
     }
@@ -946,7 +946,7 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
         for (var key in vAdditionalHeaders) {
             var header = vAdditionalHeaders[key];
             var css = header.class ? header.class : "gadditional-" + key;
-            var data = vTaskList[i].getDataObject();
+            var data = vTaskList[i].vDataObject;
             vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, "gadditional " + css);
             vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, data ? data[key] : '');
             events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], "additional_" + key);
@@ -960,7 +960,7 @@ var draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEventsCha
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, button);
         var callback = function (task, e) {
             task_1.AddTaskItemObject({
-                vParent: task.getParent()
+                vParent: task.vParent
             });
         };
         events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'addentries', Draw.bind(this));
@@ -1074,32 +1074,32 @@ var DrawDependencies = function (vDebug) {
         this.clearDependencies();
         var vList = this.getList();
         for (var i = 0; i < vList.length; i++) {
-            var vDepend = vList[i].getDepend();
-            var vDependType = vList[i].getDepType();
+            var vDepend = vList[i].vDepend;
+            var vDependType = vList[i].vDependType;
             var n = vDepend.length;
-            if (n > 0 && vList[i].getVisible() == 1) {
+            if (n > 0 && vList[i].vVisible) {
                 for (var k = 0; k < n; k++) {
                     var vTask = this.getArrayLocationByID(vDepend[k]);
-                    if (vTask >= 0 && vList[vTask].getGroup() != 2) {
-                        if (vList[vTask].getVisible() == 1) {
+                    if (vTask >= 0 && vList[vTask].vGroup != 2) {
+                        if (vList[vTask].vVisible) {
                             if (vDebug) {
                                 console.info("init drawDependency ", vList[vTask].vID, new Date());
                             }
                             var cssClass = 'gDepId' + vList[vTask].vID +
                                 ' ' + 'gDepNextId' + vList[i].vID;
-                            var dependedData = vList[vTask].getDataObject();
-                            var nextDependedData = vList[i].getDataObject();
+                            var dependedData = vList[vTask].vDataObject;
+                            var nextDependedData = vList[i].vDataObject;
                             if (dependedData && dependedData.pID && nextDependedData && nextDependedData.pID) {
                                 cssClass += ' gDepDataId' + dependedData.pID + ' ' + 'gDepNextDataId' + nextDependedData.pID;
                             }
                             if (vDependType[k] == 'SS')
-                                this.drawDependency(vList[vTask].getStartX() - 1, vList[vTask].getStartY(), vList[i].getStartX() - 1, vList[i].getStartY(), 'SS', cssClass + ' gDepSS');
+                                this.drawDependency(vList[vTask].x1 - 1, vList[vTask].y1, vList[i].x1 - 1, vList[i].y1, 'SS', cssClass + ' gDepSS');
                             else if (vDependType[k] == 'FF')
-                                this.drawDependency(vList[vTask].getEndX(), vList[vTask].getEndY(), vList[i].getEndX(), vList[i].getEndY(), 'FF', cssClass + ' gDepFF');
+                                this.drawDependency(vList[vTask].x2, vList[vTask].y2, vList[i].x2, vList[i].y2, 'FF', cssClass + ' gDepFF');
                             else if (vDependType[k] == 'SF')
-                                this.drawDependency(vList[vTask].getStartX() - 1, vList[vTask].getStartY(), vList[i].getEndX(), vList[i].getEndY(), 'SF', cssClass + ' gDepSF');
+                                this.drawDependency(vList[vTask].x1 - 1, vList[vTask].y1, vList[i].x2, vList[i].y2, 'SF', cssClass + ' gDepSF');
                             else if (vDependType[k] == 'FS')
-                                this.drawDependency(vList[vTask].getEndX(), vList[vTask].getEndY(), vList[i].getStartX() - 1, vList[i].getStartY(), 'FS', cssClass + ' gDepFS');
+                                this.drawDependency(vList[vTask].x2, vList[vTask].y2, vList[i].x1 - 1, vList[i].y1, 'FS', cssClass + ' gDepFS');
                         }
                     }
                 }
@@ -1124,21 +1124,21 @@ var folder = function (pID, ganttObj) {
     ganttObj.clearDependencies(); // clear these first so slow rendering doesn't look odd
     for (var i = 0; i < vList.length; i++) {
         if (vList[i].vID == pID) {
-            if (vList[i].getOpen() == 1) {
-                vList[i].setOpen(0);
+            if (vList[i].vOpen) {
+                vList[i].vOpen = false;
                 exports.hide(pID, ganttObj);
                 if (general_utils_1.isIE())
-                    vList[i].getGroupSpan().innerText = '+';
+                    vList[i].vGroupSpan.innerText = '+';
                 else
-                    vList[i].getGroupSpan().textContent = '+';
+                    vList[i].vGroupSpan.textContent = '+';
             }
             else {
-                vList[i].setOpen(1);
+                vList[i].vOpen = true;
                 exports.show(pID, 1, ganttObj);
                 if (general_utils_1.isIE())
-                    vList[i].getGroupSpan().innerText = '-';
+                    vList[i].vGroupSpan.innerText = '-';
                 else
-                    vList[i].getGroupSpan().textContent = '-';
+                    vList[i].vGroupSpan.textContent = '-';
             }
         }
     }
@@ -1158,16 +1158,16 @@ var hide = function (pID, ganttObj) {
     var vList = ganttObj.getList();
     var vID = 0;
     for (var i = 0; i < vList.length; i++) {
-        if (vList[i].getParent() == pID) {
+        if (vList[i].vParent == pID) {
             vID = vList[i].vID;
             // it's unlikely but if the task list has been updated since
             // the chart was drawn some of the rows may not exist
-            if (vList[i].getListChildRow())
-                vList[i].getListChildRow().style.display = 'none';
-            if (vList[i].getChildRow())
-                vList[i].getChildRow().style.display = 'none';
-            vList[i].setVisible(0);
-            if (vList[i].getGroup())
+            if (vList[i].vListChildRow)
+                vList[i].vListChildRow.style.display = 'none';
+            if (vList[i].vChildRow)
+                vList[i].vChildRow.style.display = 'none';
+            vList[i].vVisible = false;
+            if (vList[i].vGroup)
                 exports.hide(vID, ganttObj);
         }
     }
@@ -1179,37 +1179,37 @@ var show = function (pID, pTop, ganttObj) {
     var vID = 0;
     var vState = '';
     for (var i = 0; i < vList.length; i++) {
-        if (vList[i].getParent() == pID) {
-            if (!vList[i].getParItem()) {
+        if (vList[i].vParent == pID) {
+            if (!vList[i].vParItem) {
                 console.error("Cant find parent on who event (maybe problems with Task ID and Parent Id mixes?)");
             }
-            if (vList[i].getParItem().getGroupSpan()) {
+            if (vList[i].vParItem.vGroupSpan) {
                 if (general_utils_1.isIE())
-                    vState = vList[i].getParItem().getGroupSpan().innerText;
+                    vState = vList[i].vParItem.vGroupSpan.innerText;
                 else
-                    vState = vList[i].getParItem().getGroupSpan().textContent;
+                    vState = vList[i].vParItem.vGroupSpan.textContent;
             }
             i = vList.length;
         }
     }
     for (var i = 0; i < vList.length; i++) {
-        if (vList[i].getParent() == pID) {
+        if (vList[i].vParent == pID) {
             var vChgState = false;
             vID = vList[i].vID;
             if (pTop == 1 && vState == '+')
                 vChgState = true;
             else if (vState == '-')
                 vChgState = true;
-            else if (vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)
-                vList[i].setVisible(1);
+            else if (vList[i].vParItem && vList[i].vParItem.vGroup == 2)
+                vList[i].vVisible = true;
             if (vChgState) {
-                if (vList[i].getListChildRow())
-                    vList[i].getListChildRow().style.display = '';
-                if (vList[i].getChildRow())
-                    vList[i].getChildRow().style.display = '';
-                vList[i].setVisible(1);
+                if (vList[i].vListChildRow)
+                    vList[i].vListChildRow.style.display = '';
+                if (vList[i].vChildRow)
+                    vList[i].vChildRow.style.display = '';
+                vList[i].vVisible = true;
             }
-            if (vList[i].getGroup())
+            if (vList[i].vGroup)
                 exports.show(vID, 0, ganttObj);
         }
     }
@@ -1685,7 +1685,7 @@ var addJSONTask = function (pGanttVar, pJsonObj) {
         var planend = void 0;
         var itemClass = void 0;
         var link = '';
-        var milestone = 0;
+        var milestone = false;
         var resourceName = '';
         var completion = void 0;
         var group = 0;
@@ -1796,1115 +1796,160 @@ exports.addJSONTask = addJSONTask;
 },{"./task":10,"./utils/general_utils":13}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ko = exports.hu = exports.cs = exports.ja = exports.tr = exports.id = exports.nl = exports.sv = exports.cn = exports.ru = exports.fr = exports.pt = exports.de = exports.es = exports.en = void 0;
-var es = {
-    'january': 'Enero',
-    'february': 'Febrero',
-    'march': 'Marzo',
-    'april': 'Abril',
-    'maylong': 'Mayo',
-    'june': 'Junio',
-    'july': 'Julio',
-    'august': 'Agosto',
-    'september': 'Septiembre',
-    'october': 'Octubre',
-    'november': 'Noviembre',
-    'december': 'Diciembre',
-    'jan': 'Ene',
-    'feb': 'Feb',
-    'mar': 'Mar',
-    'apr': 'Abr',
-    'may': 'May',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Ago',
-    'sep': 'Sep',
-    'oct': 'Oct',
-    'nov': 'Nov',
-    'dec': 'Dic',
-    'sunday': 'Domingo',
-    'monday': 'Lunes',
-    'tuesday': 'Martes',
-    'wednesday': 'Miércoles',
-    'thursday': 'Jueves',
-    'friday': 'Viernes',
-    'saturday': 'Sábado',
-    'sun': '	Dom',
-    'mon': '	Lun',
-    'tue': '	Mar',
-    'wed': '	Mie',
-    'thu': '	Jue',
-    'fri': '	Vie',
-    'sat': '	Sab',
-    'res': 'Recurso',
-    'dur': 'Duración',
-    'comp': '% Compl.',
-    'completion': 'Completado',
-    'startdate': 'Inicio',
-    'planstartdate': 'Inicio Planificado',
-    'cost': 'Coste',
-    'enddate': 'Fin',
-    'planenddate': 'Fin Planificado',
-    'moreinfo': 'Más Información',
-    'nodata': 'No tasks found',
-    'notes': 'Notas',
-    'format': 'Formato',
-    'hour': 'Hora',
-    'day': 'Día',
-    'week': 'Semana',
-    'month': 'Mes',
-    'quarter': 'Trimestre',
-    'hours': 'Horas',
-    'days': 'Días',
-    'weeks': 'Semanas',
-    'months': 'Meses',
-    'quarters': 'Trimestres',
-    'hr': 'h',
-    'dy': 'Día',
-    'wk': 'Sem.',
-    'mth': 'Mes',
-    'qtr': 'Trim.',
-    'hrs': 'h',
-    'dys': 'Días',
-    'wks': 'Sem.',
-    'mths': 'Meses',
-    'qtrs': 'Trim.',
-    'tooltipLoading': 'Cargando...'
-};
-exports.es = es;
+exports.lang = void 0;
 var en = {
-    'format': 'Format',
-    'hour': 'Hour',
-    'day': 'Day',
-    'week': 'Week',
-    'month': 'Month',
-    'quarter': 'Quarter',
-    'hours': 'Hours',
-    'days': 'Days',
-    'weeks': 'Weeks',
-    'months': 'Months',
-    'quarters': 'Quarters',
-    'hr': 'Hr',
-    'dy': 'Day',
-    'wk': 'Wk',
-    'mth': 'Mth',
-    'qtr': 'Qtr',
-    'hrs': 'Hrs',
-    'dys': 'Days',
-    'wks': 'Wks',
-    'mths': 'Mths',
-    'qtrs': 'Qtrs',
-    'res': 'Resource',
-    'dur': 'Duration',
-    'comp': '% Comp.',
-    'completion': 'Completion',
-    'startdate': 'Start Date',
-    'planstartdate': 'Plan Start Date',
-    'enddate': 'End Date',
-    'planenddate': 'Plan End Date',
-    'cost': 'Cost',
-    'moreinfo': 'More Information',
-    'nodata': 'No tasks found',
-    'notes': 'Notes',
-    'january': 'January',
-    'february': 'February',
-    'march': 'March',
-    'april': 'April',
-    'maylong': 'May',
-    'june': 'June',
-    'july': 'July',
-    'august': 'August',
-    'september': 'September',
-    'october': 'October',
-    'november': 'November',
-    'december': 'December',
-    'jan': 'Jan',
-    'feb': 'Feb',
-    'mar': 'Mar',
-    'apr': 'Apr',
-    'may': 'May',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Aug',
-    'sep': 'Sep',
-    'oct': 'Oct',
-    'nov': 'Nov',
-    'dec': 'Dec',
-    'sunday': 'Sunday',
-    'monday': 'Monday',
-    'tuesday': 'Tuesday',
-    'wednesday': 'Wednesday',
-    'thursday': 'Thursday',
-    'friday': 'Friday',
-    'saturday': 'Saturday',
-    'sun': 'Sun',
-    'mon': 'Mon',
-    'tue': 'Tue',
-    'wed': 'Wed',
-    'thu': 'Thu',
-    'fri': 'Fri',
-    'sat': 'Sat',
-    'tooltipLoading': 'Loading...'
+    format: 'Format',
+    hour: 'Hour',
+    day: 'Day',
+    week: 'Week',
+    month: 'Month',
+    quarter: 'Quarter',
+    hours: 'Hours',
+    days: 'Days',
+    weeks: 'Weeks',
+    months: 'Months',
+    quarters: 'Quarters',
+    hr: 'Hr',
+    dy: 'Day',
+    wk: 'Wk',
+    mth: 'Mth',
+    qtr: 'Qtr',
+    hrs: 'Hrs',
+    dys: 'Days',
+    wks: 'Wks',
+    mths: 'Mths',
+    qtrs: 'Qtrs',
+    res: 'Resource',
+    dur: 'Duration',
+    comp: '% Comp.',
+    completion: 'Completion',
+    startdate: 'Start Date',
+    planstartdate: 'Plan Start Date',
+    enddate: 'End Date',
+    planenddate: 'Plan End Date',
+    duration: 'Duration',
+    resource: 'Resource',
+    cost: 'Cost',
+    moreinfo: 'More Information',
+    nodata: 'No tasks found',
+    notes: 'Notes',
+    january: 'January',
+    february: 'February',
+    march: 'March',
+    april: 'April',
+    maylong: 'May',
+    june: 'June',
+    july: 'July',
+    august: 'August',
+    september: 'September',
+    october: 'October',
+    november: 'November',
+    december: 'December',
+    jan: 'Jan',
+    feb: 'Feb',
+    mar: 'Mar',
+    apr: 'Apr',
+    may: 'May',
+    jun: 'Jun',
+    jul: 'Jul',
+    aug: 'Aug',
+    sep: 'Sep',
+    oct: 'Oct',
+    nov: 'Nov',
+    dec: 'Dec',
+    sunday: 'Sunday',
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sun: 'Sun',
+    mon: 'Mon',
+    tue: 'Tue',
+    wed: 'Wed',
+    thu: 'Thu',
+    fri: 'Fri',
+    sat: 'Sat',
+    tooltipLoading: 'Loading...'
 };
-exports.en = en;
-var de = {
-    'format': 'Ansicht',
-    'hour': 'Stunde',
-    'day': 'Tag',
-    'week': 'Woche',
-    'month': 'Monat',
-    'quarter': 'Quartal',
-    'hours': 'Stunden',
-    'days': 'Tage',
-    'weeks': 'Wochen',
-    'months': 'Monate',
-    'quarters': 'Quartale',
-    'hr': 'h',
-    'dy': 'T',
-    'wk': 'W',
-    'mth': 'M',
-    'qtr': 'Q',
-    'hrs': 'Std',
-    'dys': 'Tage',
-    'wks': 'Wochen',
-    'mths': 'Monate',
-    'qtrs': 'Quartal',
-    'res': 'Resource',
-    'dur': 'Dauer',
-    'comp': '%Fertig',
-    'completion': 'Fertigstellung',
-    'startdate': 'Erste Buchu',
-    'planstartdate': 'Erste Buchu Plan',
-    'enddate': 'Letzte Buchung',
-    'planenddate': 'Plan Letzte Buchung',
-    'cost': 'Cost',
-    'moreinfo': 'Weitere Infos',
-    'nodata': 'No tasks found',
-    'notes': 'Anmerkung',
-    'january': 'Jänner',
-    'february': 'Februar',
-    'march': 'März',
-    'april': 'April',
-    'maylong': 'Mai',
-    'june': 'Juni',
-    'july': 'Juli',
-    'august': 'August',
-    'september': 'September',
-    'october': 'Oktober',
-    'november': 'November',
-    'december': 'Dezember',
-    'jan': 'Jan',
-    'feb': 'Feb',
-    'mar': 'Mar',
-    'apr': 'Apr',
-    'may': 'Mai',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Aug',
-    'sep': 'Sep',
-    'oct': 'Okt',
-    'nov': 'Nov',
-    'dec': 'Dez',
-    'sunday': 'Sonntag',
-    'monday': 'Montag',
-    'tuesday': 'Dienstag',
-    'wednesday': 'Mittwoch',
-    'thursday': 'Donnerstag',
-    'friday': 'Freitag',
-    'saturday': 'Samstag',
-    'sun': 'So',
-    'mon': 'Mo', 'tue': 'Di', 'wed': 'Mi', 'thu': 'Do', 'fri': 'Fr', 'sat': 'Sa'
-};
-exports.de = de;
-var pt = {
-    'hours': 'Horas',
-    'days': 'Dias',
-    'weeks': 'Weeks',
-    'months': 'Months',
-    'quarters': 'Quarters',
-    'format': 'Formato',
-    'hour': 'Hora',
-    'day': 'Dia',
-    'week': 'Semana',
-    'month': 'Mês',
-    'quarter': 'Trimestre',
-    'hr': 'hr',
-    'dy': 'dia',
-    'wk': 'sem.',
-    'mth': 'mês',
-    'qtr': 'qtr',
-    'hrs': 'hrs',
-    'dys': 'dias',
-    'wks': 'sem.',
-    'mths': 'meses',
-    'qtrs': 'qtrs',
-    'completion': 'Terminado',
-    'comp': '% Completado',
-    'moreinfo': 'Mais informações',
-    'nodata': 'Sem atividades',
-    'notes': 'Notas',
-    'res': 'Responsável',
-    'dur': 'Duração',
-    'startdate': 'Data inicial',
-    'planstartdate': 'Plan Data inicial',
-    'enddate': 'Data final',
-    'planenddate': 'Plan Data final',
-    'cost': 'Custo',
-    'jan': 'Jan',
-    'feb': 'Fev',
-    'mar': 'Mar',
-    'apr': 'Abr',
-    'may': 'Mai',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Ago',
-    'sep': 'Set',
-    'oct': 'Out',
-    'nov': 'Nov',
-    'dec': 'Dez',
-    'january': 'Janeiro',
-    'february': 'Fevereiro',
-    'march': 'Março',
-    'april': 'Abril',
-    'maylong': 'Maio',
-    'june': 'Junho',
-    'july': 'Julho',
-    'august': 'Agosto',
-    'september': 'Setembro',
-    'october': 'Outubro',
-    'november': 'Novembro',
-    'december': 'Dezembro',
-    'sun': 'Dom',
-    'mon': 'Seg',
-    'tue': 'Ter',
-    'wed': 'Qua',
-    'thu': 'Qui',
-    'fri': 'Sex',
-    'sat': 'Sab'
-};
-exports.pt = pt;
-var ru = {
-    'january': 'Январь',
-    'february': 'Февраль',
-    'march': 'Март',
-    'april': 'Апрель',
-    'maylong': 'Май',
-    'june': 'Июнь',
-    'july': 'Июль',
-    'august': 'Август', 'september': 'Сентябрь',
-    'october': 'Октябрь',
-    'november': 'Ноябрь',
-    'december': 'Декабрь',
-    'jan': 'Янв',
-    'feb': 'Фев',
-    'mar': 'Мар',
-    'apr': 'Апр',
-    'may': 'Май',
-    'jun': 'Июн',
-    'jul': 'Июл',
-    'aug': 'Авг',
-    'sep': 'Сен',
-    'oct': 'Окт',
-    'nov': 'Ноя',
-    'dec': 'Дек',
-    'sunday': 'Воскресенье',
-    'monday': 'Понедельник',
-    'tuesday': 'Вторник',
-    'wednesday': 'Среда',
-    'thursday': 'Четверг',
-    'friday': 'Пятница',
-    'saturday': 'Суббота',
-    'sun': '	Вс',
-    'mon': '	Пн',
-    'tue': '	Вт',
-    'wed': '	Ср',
-    'thu': '	Чт',
-    'fri': '	Пт',
-    'sat': '	Сб',
-    'res': 'Ресурс',
-    'dur': 'Длительность',
-    'comp': '% выполнения',
-    'completion': 'Выполнено',
-    'startdate': 'Нач. дата',
-    'planstartdate': 'Plan Нач. дата',
-    'enddate': 'Кон. дата',
-    'planenddate': 'Plan Кон. дата',
-    'cost': 'Cost',
-    'moreinfo': 'Детали',
-    'nodata': 'No tasks found',
-    'notes': 'Заметки',
-    'format': 'Формат',
-    'hour': 'Час',
-    'day': 'День',
-    'week': 'Неделя',
-    'month': 'Месяц',
-    'quarter': 'Кварт',
-    'hours': 'Часов',
-    'days': 'Дней',
-    'weeks': 'Недель',
-    'months': 'Месяцев',
-    'quarters': 'Кварталов',
-    'hr': 'ч.',
-    'dy': 'дн.',
-    'wk': 'нед.',
-    'mth': 'мес.',
-    'qtr': 'кв.',
-    'hrs': 'ч.',
-    'dys': 'дн.',
-    'wks': 'нед.',
-    'mths': 'мес.',
-    'qtrs': 'кв.',
-    'tooltipLoading': 'Загрузка...'
-};
-exports.ru = ru;
-/**
- * Mois : http://bdl.oqlf.gouv.qc.ca/bdl/gabarit_bdl.asp?id=3619
-   Jours : http://bdl.oqlf.gouv.qc.ca/bdl/gabarit_bdl.asp?id=3617
- */
-var fr = {
-    'january': 'Janvier',
-    'february': 'Février',
-    'march': 'Mars',
-    'april': 'Avril',
-    'maylong': 'Mai',
-    'june': 'Juin',
-    'july': 'Juillet',
-    'august': 'Août',
-    'september': 'Septembre',
-    'october': 'Octobre',
-    'november': 'Novembre',
-    'december': 'Décembre',
-    'jan': 'Janv',
-    'feb': 'Févr',
-    'mar': 'Mars',
-    'apr': 'Avr',
-    'may': 'Mai',
-    'jun': 'Juin',
-    'jul': 'Juil',
-    'aug': 'Août',
-    'sep': 'Sept',
-    'oct': 'Oct',
-    'nov': 'Nov',
-    'dec': 'Déc',
-    'sunday': 'Dimanche',
-    'monday': 'Lundi',
-    'tuesday': 'Mardi',
-    'wednesday': 'Mercredi',
-    'thursday': 'Jeudi',
-    'friday': 'Vendredi',
-    'saturday': 'Samedi',
-    'sun': 'Dim',
-    'mon': 'Lun',
-    'tue': 'Mar',
-    'wed': 'Mer',
-    'thu': 'Jeu',
-    'fri': 'Ven',
-    'sat': 'Sam',
-    'res': 'Ressource',
-    'dur': 'Durée',
-    'comp': '% Term.',
-    'completion': 'Terminé',
-    'startdate': 'Début',
-    'planstartdate': 'Plan Début',
-    'enddate': 'Fin',
-    'planenddate': 'Plan Fin',
-    'cost': 'Cost',
-    'moreinfo': "Plus d'informations",
-    'nodata': 'No tasks found',
-    'notes': 'Notes',
-    'format': 'Format',
-    'hour': 'Heure',
-    'day': 'Jour',
-    'week': 'Semaine',
-    'month': 'Mois',
-    'quarter': 'Trimestre',
-    'hours': 'Heures',
-    'days': 'Jours',
-    'weeks': 'Semaines',
-    'months': 'Mois',
-    'quarters': 'Trimestres',
-    'hr': 'h',
-    'dy': 'j',
-    'wk': 'sem',
-    'mth': 'mois',
-    'qtr': 'tri',
-    'hrs': 'h',
-    'dys': 'j',
-    'wks': 'sem',
-    'mths': 'mois',
-    'qtrs': 'tri'
-};
-exports.fr = fr;
 var cn = {
-    'january': '一月',
-    'february': '二月',
-    'march': '三月',
-    'april': '四月',
-    'maylong': '五月',
-    'june': '六月',
-    'july': '七月',
-    'august': '八月',
-    'september': '九月',
-    'october': '十月',
-    'november': '十一月',
-    'december': '十二月',
-    'jan': '一月',
-    'feb': '二月',
-    'mar': '三月',
-    'apr': '四月',
-    'may': '五月',
-    'jun': '六月',
-    'jul': '七月',
-    'aug': '八月',
-    'sep': '九月',
-    'oct': '十月',
-    'nov': '十一月',
-    'dec': '十二月',
-    'sunday': '星期日',
-    'monday': '星期一',
-    'tuesday': '星期二',
-    'wednesday': '星期三',
-    'thursday': '星期四',
-    'friday': '星期五',
-    'saturday': '星期六',
-    'sun': '星期日',
-    'mon': '星期一',
-    'tue': '星期二',
-    'wed': '星期三',
-    'thu': '星期四',
-    'fri': '星期五',
-    'sat': '星期六',
-    'res': '資源',
-    'dur': '時程',
-    'comp': '達成率',
-    'completion': '達成',
-    'startdate': '起始日期',
-    'planstartdate': '計劃起始日期',
-    'enddate': '截止日期',
-    'planenddate': '計劃截止日期',
-    'cost': '成本',
-    'moreinfo': "更多資訊",
-    'nodata': 'No tasks found',
-    'notes': '備註',
-    'format': '格式',
-    'hour': '時',
-    'day': '日',
-    'week': '星期',
-    'month': '月',
-    'quarter': '季',
-    'hours': '小時',
-    'days': '天',
-    'weeks': '週',
-    'months': '月',
-    'quarters': '季',
-    'hr': '小時',
-    'dy': '天',
-    'wk': '週',
-    'mth': '月',
-    'qtr': '季',
-    'hrs': '小時',
-    'dys': '天',
-    'wks': '週',
-    'mths': '月',
-    'qtrs': '季'
+    january: '一月',
+    february: '二月',
+    march: '三月',
+    april: '四月',
+    maylong: '五月',
+    june: '六月',
+    july: '七月',
+    august: '八月',
+    september: '九月',
+    october: '十月',
+    november: '十一月',
+    december: '十二月',
+    jan: '一月',
+    feb: '二月',
+    mar: '三月',
+    apr: '四月',
+    may: '五月',
+    jun: '六月',
+    jul: '七月',
+    aug: '八月',
+    sep: '九月',
+    oct: '十月',
+    nov: '十一',
+    dec: '十二',
+    sunday: '星期日',
+    monday: '星期一',
+    tuesday: '星期二',
+    wednesday: '星期三',
+    thursday: '星期四',
+    friday: '星期五',
+    saturday: '星期六',
+    sun: '日',
+    mon: '一',
+    tue: '二',
+    wed: '三',
+    thu: '四',
+    fri: '五',
+    sat: '六',
+    res: '资源',
+    dur: '用时',
+    comp: '完成率',
+    completion: '已完成',
+    startdate: '起始日期',
+    planstartdate: '计划起始日期',
+    enddate: '结束日期',
+    planenddate: '计划结束日期',
+    cost: '成本',
+    duration: '用时',
+    resource: '资源',
+    moreinfo: '更多信息',
+    nodata: '没有任何任务数据',
+    notes: '备注',
+    format: '格式',
+    hour: '时',
+    day: '日',
+    week: '星期',
+    month: '月',
+    quarter: '季',
+    hours: '小时',
+    days: '天',
+    weeks: '周',
+    months: '月',
+    quarters: '季',
+    hr: '小时',
+    dy: '天',
+    wk: '周',
+    mth: '月',
+    qtr: '季',
+    hrs: '小时',
+    dys: '天',
+    wks: '周',
+    mths: '月',
+    qtrs: '季',
+    tooltipLoading: '加载中'
 };
-exports.cn = cn;
-var sv = {
-    'format': 'Filter',
-    'hour': 'Timme',
-    'day': 'Dag',
-    'week': 'Vecka',
-    'month': 'Månad',
-    'quarter': 'Kvartal',
-    'hours': 'Timmar',
-    'days': 'Dagar',
-    'weeks': 'Veckor',
-    'months': 'Månader',
-    'quarters': 'Kvartal',
-    'hr': 'Timme',
-    'dy': 'Dag',
-    'wk': 'Vecka',
-    'mth': 'Månad',
-    'qtr': 'Q',
-    'hrs': 'Timmar',
-    'dys': 'Dagar',
-    'wks': 'Veckor',
-    'mths': 'Månader',
-    'qtrs': 'Q',
-    'res': 'Resurs',
-    'dur': 'Tidsåtgång',
-    'comp': '% klart',
-    'completion': 'Klart',
-    'startdate': 'Startdatum',
-    'planstartdate': 'Planerad startdatum',
-    'enddate': 'Slutdatum',
-    'planenddate': 'Planerad slutdatum',
-    'cost': 'Kostnad',
-    'moreinfo': 'Mer Information',
-    'nodata': 'No tasks found',
-    'notes': 'Notes',
-    'january': 'januari',
-    'february': 'februari',
-    'march': 'mars',
-    'april': 'april',
-    'maylong': 'maj',
-    'june': 'juni',
-    'july': 'juli',
-    'august': 'augusti',
-    'september': 'september',
-    'october': 'oktober',
-    'november': 'november',
-    'december': 'december',
-    'jan': 'jan',
-    'feb': 'feb',
-    'mar': 'mar',
-    'apr': 'apr',
-    'may': 'maj',
-    'jun': 'jun',
-    'jul': 'jul',
-    'aug': 'aug',
-    'sep': 'sep',
-    'oct': 'okt',
-    'nov': 'nov',
-    'dec': 'dec',
-    'sunday': 'söndag',
-    'monday': 'måndag',
-    'tuesday': 'tisdag',
-    'wednesday': 'onsdag',
-    'thursday': 'torsdag',
-    'friday': 'fredag',
-    'saturday': 'lördag',
-    'sun': 'sön',
-    'mon': 'mån',
-    'tue': 'tis',
-    'wed': 'ons',
-    'thu': 'tor',
-    'fri': 'fre',
-    'sat': 'lör'
-};
-exports.sv = sv;
-var nl = {
-    'format': 'Format',
-    'hour': 'Uur',
-    'day': 'Dag',
-    'week': 'Week',
-    'month': 'Maand',
-    'quarter': 'Kwartaal',
-    'hours': 'Uren',
-    'days': 'Dagen',
-    'weeks': 'Weken',
-    'months': 'Maanden',
-    'quarters': 'Kwartalen',
-    'hr': 'uur',
-    'dy': 'dag',
-    'wk': 'wk',
-    'mth': 'mnd',
-    'qtr': 'kw',
-    'hrs': 'uren',
-    'dys': 'dagen',
-    'wks': 'weken',
-    'mths': 'maanden',
-    'qtrs': 'kwartalen',
-    'res': 'Resource',
-    'dur': 'Doorlooptijd',
-    'comp': '% gereed',
-    'completion': 'Gereed',
-    'startdate': 'Startdatum',
-    'planstartdate': 'Geplande startdatum',
-    'enddate': 'Einddatum',
-    'planenddate': 'Geplande einddatum',
-    'cost': 'Kosten',
-    'moreinfo': 'Meer informatie',
-    'nodata': 'No tasks found',
-    'notes': 'Notities',
-    'january': 'januari',
-    'february': 'februari',
-    'march': 'maart',
-    'april': 'april',
-    'maylong': 'mei',
-    'june': 'juni',
-    'july': 'juli',
-    'august': 'augustus',
-    'september': 'september',
-    'october': 'oktober',
-    'november': 'november',
-    'december': 'december',
-    'jan': 'jan',
-    'feb': 'feb',
-    'mar': 'mrt',
-    'apr': 'apr',
-    'may': 'mei',
-    'jun': 'jun',
-    'jul': 'jul',
-    'aug': 'aug',
-    'sep': 'sep',
-    'oct': 'okt',
-    'nov': 'nov',
-    'dec': 'dec',
-    'sunday': 'zondag',
-    'monday': 'maandag',
-    'tuesday': 'dinsdag',
-    'wednesday': 'woensdag',
-    'thursday': 'donderdag',
-    'friday': 'vrijdag',
-    'saturday': 'zaterdag',
-    'sun': 'zo',
-    'mon': 'ma',
-    'tue': 'di',
-    'wed': 'wo',
-    'thu': 'do',
-    'fri': 'vr',
-    'sat': 'za'
-};
-exports.nl = nl;
-var id = {
-    'format': 'Format',
-    'hour': 'Jam',
-    'day': 'Hari',
-    'week': 'Minggu',
-    'month': 'Bulan',
-    'quarter': 'Kuartal',
-    'hours': 'Jam',
-    'days': 'Hari',
-    'weeks': 'Minggu',
-    'months': 'Bulan',
-    'quarters': 'Kuartal',
-    'hr': 'Jam',
-    'dy': 'Hari',
-    'wk': 'Min',
-    'mth': 'Bln',
-    'qtr': 'Krtl',
-    'hrs': 'Jam',
-    'dys': 'Hari',
-    'wks': 'Min',
-    'mths': 'Bln',
-    'qtrs': 'Krtl',
-    'res': 'Sumber Daya',
-    'dur': 'Durasi',
-    'comp': '% Penyelesaian',
-    'completion': 'Penyelesaian',
-    'startdate': 'Tanggal Mulai',
-    'planstartdate': 'Perencanaan Tanggal Mulai',
-    'enddate': 'Tanggal Akhir',
-    'planenddate': 'Perencanaan Tanggal Akhir',
-    'cost': 'Biaya',
-    'moreinfo': 'Informasi Lebih Lanjut',
-    'nodata': 'No tasks found',
-    'notes': 'Catatan',
-    'january': 'Januari',
-    'february': 'Februari',
-    'march': 'Maret',
-    'april': 'April',
-    'maylong': 'Mei',
-    'june': 'Juni',
-    'july': 'Juli',
-    'august': 'Agustus',
-    'september': 'September',
-    'october': 'Oktober',
-    'november': 'November',
-    'december': 'Desember',
-    'jan': 'Jan',
-    'feb': 'Feb',
-    'mar': 'Mar',
-    'apr': 'Apr',
-    'may': 'Mei',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Agu',
-    'sep': 'Sep',
-    'oct': 'Okt',
-    'nov': 'Nov',
-    'dec': 'Des',
-    'sunday': 'Minggu',
-    'monday': 'Senin',
-    'tuesday': 'Selasa',
-    'wednesday': 'Rabu',
-    'thursday': 'Kamis',
-    'friday': 'Jumat',
-    'saturday': 'Sabtu',
-    'sun': 'Min',
-    'mon': 'Sen',
-    'tue': 'Sel',
-    'wed': 'Rab',
-    'thu': 'Kam',
-    'fri': 'Jum',
-    'sat': 'Sab'
-};
-exports.id = id;
-var tr = {
-    'format': 'Biçim',
-    'hour': 'Saat',
-    'day': 'Gün',
-    'week': 'Hafta',
-    'month': 'Ay',
-    'quarter': 'Çeyrek Yıl',
-    'hours': 'Saat',
-    'days': 'Gün',
-    'weeks': 'Hafta',
-    'months': 'Ay',
-    'quarters': 'Çeyrek Yıl',
-    'hr': 'Saat',
-    'dy': 'Gün',
-    'wk': 'Hft',
-    'mth': 'Ay',
-    'qtr': 'Çyrk',
-    'hrs': 'Saat',
-    'dys': 'Gün',
-    'wks': 'Hft',
-    'mths': 'Ay',
-    'qtrs': 'Çyrk',
-    'res': 'Kaynak',
-    'dur': 'Süre',
-    'comp': '% Tamamlanma.',
-    'completion': 'Tamamlanma',
-    'startdate': 'Başlangıç Tarihi',
-    'planstartdate': 'Plan Başlama Tarihi',
-    'enddate': 'Bitiş Tarihi',
-    'planenddate': 'Plan Bitiş Tarihi',
-    'cost': 'Tutar',
-    'moreinfo': 'Daha Fazla Bilgi',
-    'nodata': 'No tasks found',
-    'notes': 'Notlar',
-    'january': 'Ocak',
-    'february': 'Şubat',
-    'march': 'Mart',
-    'april': 'Nisan',
-    'maylong': 'Mayıs',
-    'june': 'Haziran',
-    'july': 'Temmuz',
-    'august': 'Ağustos',
-    'september': 'Eylül',
-    'october': 'Ekim',
-    'november': 'Kasım',
-    'december': 'Aralık',
-    'jan': 'Oca',
-    'feb': 'Şub',
-    'mar': 'Mar',
-    'apr': 'Nis',
-    'may': 'May',
-    'jun': 'Haz',
-    'jul': 'Tem',
-    'aug': 'Ağu',
-    'sep': 'Eyl',
-    'oct': 'Eki',
-    'nov': 'Kas',
-    'dec': 'Ara',
-    'sunday': 'Pazar',
-    'monday': 'Pazartesi',
-    'tuesday': 'Salı',
-    'wednesday': 'Çarşamba',
-    'thursday': 'Perşembe',
-    'friday': 'Cuma',
-    'saturday': 'Cumartesi',
-    'sun': 'Paz',
-    'mon': 'Pzt',
-    'tue': 'Sal',
-    'wed': 'Çrş',
-    'thu': 'Prş',
-    'fri': 'Cum',
-    'sat': 'Cmt'
-};
-exports.tr = tr;
-var ja = {
-    'format': 'タイムライン表示',
-    'hour': '時',
-    'day': '日',
-    'week': '週',
-    'month': '月',
-    'quarter': '四半期',
-    'hours': '時間',
-    'days': '日間',
-    'weeks': '週間',
-    'months': '月間',
-    'quarters': '四半期',
-    'hr': '時',
-    'dy': '日',
-    'wk': '週',
-    'mth': '月',
-    'qtr': '四',
-    'hrs': '時間',
-    'dys': '日間',
-    'wks': '週間',
-    'mths': '月間',
-    'qtrs': '四半期',
-    'res': 'リソース',
-    'dur': '期間',
-    'comp': '進捗率',
-    'completion': '進捗率',
-    'startdate': '開始日',
-    'planstartdate': '予定開始日',
-    'enddate': '期日',
-    'planenddate': '予定期日',
-    'cost': 'コスト',
-    'moreinfo': '詳細',
-    'nodata': 'No tasks found',
-    'notes': 'ノート',
-    'january': '1月',
-    'february': '2月',
-    'march': '3月',
-    'april': '4月',
-    'maylong': '5月',
-    'june': '6月',
-    'july': '7月',
-    'august': '8月',
-    'september': '9月',
-    'october': '10月',
-    'november': '11月',
-    'december': '12月',
-    'jan': '1月',
-    'feb': '2月',
-    'mar': '3月',
-    'apr': '4月',
-    'may': '5月',
-    'jun': '6月',
-    'jul': '7月',
-    'aug': '8月',
-    'sep': '9月',
-    'oct': '10月',
-    'nov': '11月',
-    'dec': '12月',
-    'sunday': '日曜日',
-    'monday': '月曜日',
-    'tuesday': '火曜日',
-    'wednesday': '水曜日',
-    'thursday': '木曜日',
-    'friday': '金曜日',
-    'saturday': '土曜日',
-    'sun': '日',
-    'mon': '月',
-    'tue': '火',
-    'wed': '水',
-    'thu': '木',
-    'fri': '金',
-    'sat': '土',
-    'tooltipLoading': 'ローディング中...'
-};
-exports.ja = ja;
-var cs = {
-    'format': 'Zobrazení',
-    'hour': 'Hodina',
-    'day': 'Den',
-    'week': 'Týden',
-    'month': 'Měsíc',
-    'quarter': 'Kvartál',
-    'hours': 'Hodiny',
-    'days': 'Dni',
-    'weeks': 'Týdny',
-    'months': 'Měsíce',
-    'quarters': 'Kvartály',
-    'hr': 'Ho',
-    'dy': 'Den',
-    'wk': 'Tyd',
-    'mth': 'Měs',
-    'qtr': 'Kvar',
-    'hrs': 'Ho',
-    'dys': 'Dni',
-    'wks': 'Tyd',
-    'mths': 'Měs',
-    'qtrs': 'Kvar',
-    'res': 'Přiřazeno',
-    'dur': 'Trvání',
-    'comp': '% Hotovo',
-    'completion': 'Hotovo',
-    'startdate': 'Start',
-    'planstartdate': 'Plánovaný start',
-    'enddate': 'Konec',
-    'planenddate': 'Plánovaný konec',
-    'cost': 'Náklady',
-    'moreinfo': 'Více informací',
-    'nodata': 'No tasks found',
-    'notes': 'Poznámky',
-    'january': 'Leden',
-    'february': 'Únor',
-    'march': 'Březen',
-    'april': 'Duben',
-    'maylong': 'Květen',
-    'june': 'Červen',
-    'july': 'Červenec',
-    'august': 'Srpen',
-    'september': 'Září',
-    'october': 'Říjen',
-    'november': 'Listopad',
-    'december': 'Prosinec',
-    'jan': 'Led',
-    'feb': 'Úno',
-    'mar': 'Bře',
-    'apr': 'Dub',
-    'may': 'Kvě',
-    'jun': 'Čer',
-    'jul': 'Čvc',
-    'aug': 'Srp',
-    'sep': 'Zář',
-    'oct': 'Říj',
-    'nov': 'Lis',
-    'dec': 'Pro',
-    'sunday': 'Neděle',
-    'monday': 'Pondělí',
-    'tuesday': 'Úterý',
-    'wednesday': 'Středa',
-    'thursday': 'Čtvrtek',
-    'friday': 'Pátek',
-    'saturday': 'Sobota',
-    'sun': 'Ne',
-    'mon': 'Po',
-    'tue': 'Út',
-    'wed': 'St',
-    'thu': 'Čt',
-    'fri': 'Pa',
-    'sat': 'So',
-    'tooltipLoading': 'Nahrávám...'
-};
-exports.cs = cs;
-var hu = {
-    'format': 'Formátum',
-    'hour': 'Óra',
-    'day': 'Nap',
-    'week': 'Hét',
-    'month': 'Hónap',
-    'quarter': 'Negyedév ',
-    'hours': 'Órák',
-    'days': 'Nap',
-    'weeks': 'Hét',
-    'months': 'Hónap',
-    'quarters': 'Negyedév',
-    'hr': 'Ó',
-    'dy': 'Nap',
-    'wk': 'Hét',
-    'mth': 'Hó',
-    'qtr': 'NÉ',
-    'hrs': 'Óra',
-    'dys': 'Nap',
-    'wks': 'Hét',
-    'mths': 'Hó',
-    'qtrs': 'NÉ',
-    'res': 'Erőforrás',
-    'dur': 'Időtartam',
-    'comp': '% Kész',
-    'completion': 'Elkészült',
-    'startdate': 'Kezdés',
-    'planstartdate': 'Tervezett kezdés',
-    'enddate': 'Befejezés',
-    'planenddate': 'Tervezett befejezés',
-    'cost': 'Költség',
-    'moreinfo': 'További információ',
-    'nodata': 'No tasks found',
-    'notes': 'Jegyzetek',
-    'january': 'Január',
-    'february': 'Február',
-    'march': 'Március',
-    'april': 'Április',
-    'maylong': 'Május',
-    'june': 'Június',
-    'july': 'Július',
-    'august': 'Augusztus',
-    'september': 'Szeptember',
-    'october': 'Október',
-    'november': 'November',
-    'december': 'December',
-    'jan': 'Jan',
-    'feb': 'Feb',
-    'mar': 'Már',
-    'apr': 'Ápr',
-    'may': 'Máj',
-    'jun': 'Jún',
-    'jul': 'Júl',
-    'aug': 'Aug',
-    'sep': 'Szep',
-    'oct': 'Okt',
-    'nov': 'Nov',
-    'dec': 'Dec',
-    'sunday': 'Vasárnap',
-    'monday': 'Hétfő',
-    'tuesday': 'Kedd',
-    'wednesday': 'Szerda',
-    'thursday': 'Csütörtök',
-    'friday': 'Péntek',
-    'saturday': 'Szombat',
-    'sun': 'Vas',
-    'mon': 'Hé',
-    'tue': 'Ke',
-    'wed': 'Sze',
-    'thu': 'Csü',
-    'fri': 'Pén',
-    'sat': 'Szo',
-    'tooltipLoading': 'Belöltés...'
-};
-exports.hu = hu;
-var ko = {
-    'format': '구분',
-    'hour': '시',
-    'day': '일',
-    'week': '주',
-    'month': '월',
-    'quarter': '분기',
-    'hours': '시',
-    'days': '일',
-    'weeks': '주',
-    'months': '월',
-    'quarters': '분기',
-    'hr': '시',
-    'dy': '일',
-    'wk': '주',
-    'mth': '월',
-    'qtr': '분기',
-    'hrs': '시',
-    'dys': '일',
-    'wks': '주',
-    'mths': '월',
-    'qtrs': '분기',
-    'res': '이름',
-    'dur': '기간',
-    'comp': '% ',
-    'completion': '완료',
-    'startdate': '시작일자',
-    'planstartdate': '계획 시작일자',
-    'enddate': '종료일자',
-    'planenddate': '계획 종료일자',
-    'cost': '비용',
-    'moreinfo': '더 많은 정보',
-    'nodata': 'No tasks found',
-    'notes': '비고',
-    'january': '1월',
-    'february': '2월',
-    'march': '3월',
-    'april': '4월',
-    'maylong': '5월',
-    'june': '6월',
-    'july': '7월',
-    'august': '8월',
-    'september': '9월',
-    'october': '10월',
-    'november': '11월',
-    'december': '12월',
-    'jan': '1',
-    'feb': '2',
-    'mar': '3',
-    'apr': '4',
-    'may': '5',
-    'jun': '6',
-    'jul': '7',
-    'aug': '8',
-    'sep': '9',
-    'oct': '10',
-    'nov': '11',
-    'dec': '12',
-    'sunday': '일요일',
-    'monday': '월요일',
-    'tuesday': '화요일',
-    'wednesday': '수요일',
-    'thursday': '목요일',
-    'friday': '금요일',
-    'saturday': '토요일',
-    'sun': '일',
-    'mon': '월',
-    'tue': '화',
-    'wed': '수',
-    'thu': '목',
-    'fri': '금',
-    'sat': '토',
-    'tooltipLoading': '로딩중...'
-};
-exports.ko = ko;
+exports.lang = { en: en, cn: cn };
 
 },{}],9:[function(require,module,exports){
 "use strict";
@@ -3156,9 +2201,9 @@ var sortTasks = function (pList, pID, pIdx) {
         return pIdx;
     }
     var sortIdx = pIdx;
-    var sortArr = new Array();
+    var sortArr = [];
     for (var i = 0; i < pList.length; i++) {
-        if (pList[i].getParent() == pID)
+        if (pList[i].vParent == pID)
             sortArr.push(pList[i]);
     }
     if (sortArr.length > 0) {
@@ -3175,7 +2220,7 @@ var sortTasks = function (pList, pID, pIdx) {
     for (var j = 0; j < sortArr.length; j++) {
         for (var i = 0; i < pList.length; i++) {
             if (pList[i].vID == sortArr[j].vID) {
-                pList[i].setSortIdx(sortIdx++);
+                pList[i].vSortIdx = sortIdx++;
                 sortIdx = exports.sortTasks(pList, pList[i].vID, sortIdx);
             }
         }
@@ -3192,7 +2237,23 @@ var TaskItemObject = function (object) {
 };
 exports.TaskItemObject = TaskItemObject;
 var TaskItem = /** @class */ (function () {
-    function TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pCost, pPlanStart, pPlanEnd, pDuration, pBarText, pDataObject) {
+    function TaskItem(vID, vName, pStart, pEnd, vClass, vLink, vMile, pRes, vComp, vGroup, vParent, pOpen, pDepend, vCaption, pNotes, vGantt, vCost, pPlanStart, pPlanEnd, vDuration, vBarText, vDataObject) {
+        var _a;
+        this.vID = vID;
+        this.vName = vName;
+        this.vClass = vClass;
+        this.vLink = vLink;
+        this.vMile = vMile;
+        this.pRes = pRes;
+        this.vComp = vComp;
+        this.vGroup = vGroup;
+        this.vParent = vParent;
+        this.vCaption = vCaption;
+        this.vGantt = vGantt;
+        this.vCost = vCost;
+        this.vDuration = vDuration;
+        this.vBarText = vBarText;
+        this.vDataObject = vDataObject;
         this.vStart = null;
         this.vEnd = null;
         this.vPlanStart = null;
@@ -3201,40 +2262,27 @@ var TaskItem = /** @class */ (function () {
         this.vGroupMinEnd = null;
         this.vGroupMinPlanStart = null;
         this.vGroupMinPlanEnd = null;
-        this.vVisible = true;
-        this.vToDelete = false;
-        this.vListChildRow = null;
-        this.vChildRow = null;
-        this.vGroupSpan = null;
-        this.vGantt = pGantt ? pGantt : this;
-        this._id = document.createTextNode(pID).data;
-        this.vID = general_utils_1.hashKey(document.createTextNode(pID).data);
-        this.vName = document.createTextNode(pName).data;
-        this.vClass = document.createTextNode(pClass).data;
-        this.vLink = document.createTextNode(pLink).data;
-        this.vMile = parseInt(document.createTextNode(pMile).data) == 1;
-        this.vRes = document.createTextNode(pRes).data;
-        this.vComp = parseFloat(document.createTextNode(pComp).data);
-        this.vCost = parseInt(document.createTextNode(pCost).data);
-        this.vGroup = parseInt(document.createTextNode(pGroup).data);
-        this.vDataObject = pDataObject;
-        var parent = document.createTextNode(pParent).data;
-        if (parent && parent !== '0') {
-            parent = general_utils_1.hashKey(parent).toString();
-        }
-        this.vParent = parent;
-        this.vOpen = (this.vGroup == 2) ? true : parseInt(document.createTextNode(pOpen).data) === 1;
-        this.vDepend = new Array();
-        this.vDependType = new Array();
-        this.vCaption = document.createTextNode(pCaption).data;
-        this.vDuration = pDuration || '';
-        this.vBarText = pBarText || '';
+        this.vRes = '\u00A0';
+        this.vDepend = null;
+        this.vDependType = null;
         this.vLevel = 0;
         this.vNumKid = 0;
         this.vWeight = 0;
         this.vVisible = true;
         this.vSortIdx = 0;
         this.vToDelete = false;
+        this.vListChildRow = null;
+        this.vChildRow = null;
+        this.vGroupSpan = null;
+        this.vGantt = (_a = this.vGantt) !== null && _a !== void 0 ? _a : this;
+        this.vID = general_utils_1.hashKey(this.vID.toString());
+        this.vRes = document.createTextNode(pRes).data;
+        if (this.vParent && this.vParent !== 0) {
+            this.vParent = general_utils_1.hashKey(this.vParent.toString()).toString();
+        }
+        this.vOpen = (this.vGroup == 2) ? true : parseInt(document.createTextNode(pOpen).data) === 1;
+        this.vDepend = [];
+        this.vDependType = [];
         this.vNotes = document.createElement('span');
         this.vNotes.className = 'gTaskNotes';
         if (pNotes != null) {
@@ -3288,28 +2336,9 @@ var TaskItem = /** @class */ (function () {
             }
         }
     }
-    TaskItem.prototype.getID = function () {
-        return this.vID;
-    };
-    ;
-    TaskItem.prototype.getOriginalID = function () {
-        return this._id;
-    };
-    ;
-    TaskItem.prototype.getGantt = function () {
-        return this.vGantt;
-    };
-    TaskItem.prototype.getName = function () {
-        return this.vName;
-    };
-    ;
     TaskItem.prototype.getStart = function () {
         var _a, _b;
         return (_b = (_a = this.vStart) !== null && _a !== void 0 ? _a : this.vPlanStart) !== null && _b !== void 0 ? _b : new Date();
-    };
-    ;
-    TaskItem.prototype.getStartVar = function () {
-        return this.vStart;
     };
     ;
     TaskItem.prototype.getEnd = function () {
@@ -3344,10 +2373,6 @@ var TaskItem = /** @class */ (function () {
             return new Date();
     };
     ;
-    TaskItem.prototype.getEndVar = function () {
-        return this.vEnd;
-    };
-    ;
     TaskItem.prototype.getPlanStart = function () {
         var _a;
         return (_a = this.vPlanStart) !== null && _a !== void 0 ? _a : this.vStart;
@@ -3356,62 +2381,6 @@ var TaskItem = /** @class */ (function () {
     TaskItem.prototype.getPlanEnd = function () {
         var _a;
         return (_a = this.vPlanEnd) !== null && _a !== void 0 ? _a : this.vEnd;
-    };
-    ;
-    TaskItem.prototype.getCost = function () {
-        return this.vCost;
-    };
-    ;
-    TaskItem.prototype.getGroupMinStart = function () {
-        return this.vGroupMinStart;
-    };
-    ;
-    TaskItem.prototype.getGroupMinEnd = function () {
-        return this.vGroupMinEnd;
-    };
-    ;
-    TaskItem.prototype.getGroupMinPlanStart = function () {
-        return this.vGroupMinPlanStart;
-    };
-    ;
-    TaskItem.prototype.getGroupMinPlanEnd = function () {
-        return this.vGroupMinPlanEnd;
-    };
-    ;
-    TaskItem.prototype.getClass = function () {
-        return this.vClass;
-    };
-    ;
-    TaskItem.prototype.getLink = function () {
-        return this.vLink;
-    };
-    ;
-    TaskItem.prototype.getMile = function () {
-        return this.vMile;
-    };
-    ;
-    TaskItem.prototype.getDepend = function () {
-        var _a;
-        return (_a = this.vDepend) !== null && _a !== void 0 ? _a : null;
-    };
-    ;
-    TaskItem.prototype.getDataObject = function () {
-        return this.vDataObject;
-    };
-    ;
-    TaskItem.prototype.getDepType = function () {
-        var _a;
-        return (_a = this.vDependType) !== null && _a !== void 0 ? _a : null;
-    };
-    ;
-    TaskItem.prototype.getCaption = function () {
-        var _a;
-        return (_a = this.vCaption) !== null && _a !== void 0 ? _a : '';
-    };
-    ;
-    TaskItem.prototype.getResource = function () {
-        var _a;
-        return (_a = this.vRes) !== null && _a !== void 0 ? _a : '\u00A0';
     };
     ;
     TaskItem.prototype.getCompVal = function () {
@@ -3435,18 +2404,6 @@ var TaskItem = /** @class */ (function () {
             return (100 - this.vCompVal) + '%';
         else
             return '';
-    };
-    ;
-    TaskItem.prototype.getNotes = function () {
-        return this.vNotes;
-    };
-    ;
-    TaskItem.prototype.getSortIdx = function () {
-        return this.vSortIdx;
-    };
-    ;
-    TaskItem.prototype.getToDelete = function () {
-        return this.vToDelete;
     };
     ;
     TaskItem.prototype.getDuration = function (pFormat, pLang) {
@@ -3512,114 +2469,6 @@ var TaskItem = /** @class */ (function () {
         }
         return this.vDuration;
     };
-    TaskItem.prototype.getBarText = function () {
-        return this.vBarText;
-    };
-    ;
-    TaskItem.prototype.getParent = function () {
-        return this.vParent;
-    };
-    ;
-    TaskItem.prototype.getGroup = function () {
-        return this.vGroup;
-    };
-    ;
-    TaskItem.prototype.getOpen = function () {
-        return this.vOpen;
-    };
-    ;
-    TaskItem.prototype.getLevel = function () {
-        return this.vLevel;
-    };
-    ;
-    TaskItem.prototype.getNumKids = function () {
-        return this.vNumKid;
-    };
-    ;
-    TaskItem.prototype.getWeight = function () {
-        return this.vWeight;
-    };
-    ;
-    TaskItem.prototype.getStartX = function () {
-        return this.x1;
-    };
-    ;
-    TaskItem.prototype.getStartY = function () {
-        return this.y1;
-    };
-    ;
-    TaskItem.prototype.getEndX = function () {
-        return this.x2;
-    };
-    ;
-    TaskItem.prototype.getEndY = function () {
-        return this.y2;
-    };
-    ;
-    TaskItem.prototype.getVisible = function () {
-        return this.vVisible;
-    };
-    ;
-    TaskItem.prototype.getParItem = function () {
-        return this.vParItem;
-    };
-    ;
-    TaskItem.prototype.getCellDiv = function () {
-        return this.vCellDiv;
-    };
-    ;
-    TaskItem.prototype.getBarDiv = function () {
-        return this.vBarDiv;
-    };
-    ;
-    TaskItem.prototype.getTaskDiv = function () {
-        return this.vTaskDiv;
-    };
-    ;
-    TaskItem.prototype.getPlanTaskDiv = function () {
-        return this.vPlanTaskDiv;
-    };
-    ;
-    TaskItem.prototype.getChildRow = function () {
-        return this.vChildRow;
-    };
-    ;
-    TaskItem.prototype.getListChildRow = function () {
-        return this.vListChildRow;
-    };
-    ;
-    TaskItem.prototype.getGroupSpan = function () {
-        return this.vGroupSpan;
-    };
-    ;
-    TaskItem.prototype.setName = function (pName) {
-        this.vName = pName;
-    };
-    ;
-    TaskItem.prototype.setNotes = function (pNotes) {
-        this.vNotes = pNotes;
-    };
-    ;
-    TaskItem.prototype.setClass = function (pClass) {
-        this.vClass = pClass;
-    };
-    ;
-    TaskItem.prototype.setCost = function (pCost) {
-        this.vCost = pCost;
-    };
-    ;
-    TaskItem.prototype.setResource = function (pRes) {
-        this.vRes = pRes;
-    };
-    ;
-    TaskItem.prototype.setDuration = function (pDuration) {
-        this.vDuration = pDuration;
-    };
-    ;
-    TaskItem.prototype.setDataObject = function (pDataObject) {
-        this.vDataObject = pDataObject;
-    };
-    ;
     TaskItem.prototype.setStart = function (pStart) {
         if (pStart instanceof Date) {
             this.vStart = pStart;
@@ -3658,148 +2507,42 @@ var TaskItem = /** @class */ (function () {
             this.vPlanEnd = new Date(pPlanEnd);
     };
     ;
-    TaskItem.prototype.setGroupMinStart = function (pStart) {
-        if (pStart instanceof Date)
-            this.vGroupMinStart = pStart;
-    };
-    ;
-    TaskItem.prototype.setGroupMinEnd = function (pEnd) {
-        if (pEnd instanceof Date)
-            this.vGroupMinEnd = pEnd;
-    };
-    ;
-    TaskItem.prototype.setLevel = function (pLevel) {
-        this.vLevel = parseInt(document.createTextNode(pLevel).data);
-    };
-    ;
-    TaskItem.prototype.setNumKid = function (pNumKid) {
-        this.vNumKid = parseInt(document.createTextNode(pNumKid).data);
-    };
-    ;
-    TaskItem.prototype.setWeight = function (pWeight) {
-        this.vWeight = parseInt(document.createTextNode(pWeight).data);
-    };
-    ;
-    TaskItem.prototype.setCompVal = function (pCompVal) {
-        this.vCompVal = parseFloat(document.createTextNode(pCompVal).data);
-    };
-    ;
-    TaskItem.prototype.setComp = function (pComp) {
-        this.vComp = parseInt(document.createTextNode(pComp).data);
-    };
-    ;
-    TaskItem.prototype.setStartX = function (pX) {
-        this.x1 = parseInt(document.createTextNode(pX).data);
-    };
-    ;
-    TaskItem.prototype.setStartY = function (pY) {
-        this.y1 = parseInt(document.createTextNode(pY).data);
-    };
-    ;
-    TaskItem.prototype.setEndX = function (pX) {
-        this.x2 = parseInt(document.createTextNode(pX).data);
-    };
-    ;
-    TaskItem.prototype.setEndY = function (pY) {
-        this.y2 = parseInt(document.createTextNode(pY).data);
-    };
-    ;
-    TaskItem.prototype.setOpen = function (pOpen) {
-        this.vOpen = parseInt(document.createTextNode(pOpen).data) === 1;
-    };
-    ;
-    TaskItem.prototype.setVisible = function (pVisible) {
-        this.vVisible = parseInt(document.createTextNode(pVisible).data) === 1;
-    };
-    ;
-    TaskItem.prototype.setSortIdx = function (pSortIdx) {
-        this.vSortIdx = parseInt(document.createTextNode(pSortIdx).data);
-    };
-    ;
-    TaskItem.prototype.setToDelete = function (pToDelete) {
-        if (pToDelete)
-            this.vToDelete = true;
-        else
-            this.vToDelete = false;
-    };
-    ;
-    TaskItem.prototype.setParItem = function (pParItem) {
-        if (pParItem)
-            this.vParItem = pParItem;
-    };
-    ;
-    TaskItem.prototype.setCellDiv = function (pCellDiv) {
-        if (typeof HTMLDivElement !== 'function' || pCellDiv instanceof HTMLDivElement)
-            this.vCellDiv = pCellDiv;
-    };
-    ; //"typeof HTMLDivElement !== 'function'" to play nice with ie6 and 7
     TaskItem.prototype.setGroup = function (pGroup) {
-        if (pGroup === true || pGroup === 'true') {
+        if (pGroup === 1) {
             this.vGroup = 1;
         }
-        else if (pGroup === false || pGroup === 'false') {
+        else if (pGroup === 0) {
             this.vGroup = 0;
         }
         else {
-            this.vGroup = parseInt(document.createTextNode(pGroup).data);
+            this.vGroup = pGroup;
         }
     };
     ;
-    TaskItem.prototype.setBarText = function (pBarText) {
-        if (pBarText)
-            this.vBarText = pBarText;
-    };
-    ;
-    TaskItem.prototype.setBarDiv = function (pDiv) {
-        if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-            this.vBarDiv = pDiv;
-    };
-    ;
-    TaskItem.prototype.setTaskDiv = function (pDiv) {
-        if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-            this.vTaskDiv = pDiv;
-    };
-    ;
-    TaskItem.prototype.setPlanTaskDiv = function (pDiv) {
-        if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-            this.vPlanTaskDiv = pDiv;
-    };
-    ;
-    TaskItem.prototype.setChildRow = function (pRow) {
-        if (typeof HTMLTableRowElement !== 'function' || pRow instanceof HTMLTableRowElement)
-            this.vChildRow = pRow;
-    };
-    ;
-    TaskItem.prototype.setListChildRow = function (pRow) {
-        if (typeof HTMLTableRowElement !== 'function' || pRow instanceof HTMLTableRowElement)
-            this.vListChildRow = pRow;
-    };
-    ;
-    TaskItem.prototype.setGroupSpan = function (pSpan) {
-        if (typeof HTMLSpanElement !== 'function' || pSpan instanceof HTMLSpanElement)
-            this.vGroupSpan = pSpan;
-    };
-    ;
-    TaskItem.prototype.getAllData = function () {
-        return {
-            pID: this.vID,
-            pName: this.vName,
-            pStart: this.vStart,
-            pEnd: this.vEnd,
-            pPlanStart: this.vPlanStart,
-            pPlanEnd: this.vPlanEnd,
-            pGroupMinStart: this.vGroupMinStart,
-            pGroupMinEnd: this.vGroupMinEnd,
-            pClass: this.vClass,
-            pLink: this.vLink,
-            pMile: this.vMile,
-            pRes: this.vRes,
-            pComp: this.vComp,
-            pCost: this.vCost,
-            pGroup: this.vGroup,
-            pDataObjec: this.vDataObject
-        };
-    };
+    Object.defineProperty(TaskItem.prototype, "allData", {
+        get: function () {
+            return {
+                pID: this.vID,
+                pName: this.vName,
+                pStart: this.vStart,
+                pEnd: this.vEnd,
+                pPlanStart: this.vPlanStart,
+                pPlanEnd: this.vPlanEnd,
+                pGroupMinStart: this.vGroupMinStart,
+                pGroupMinEnd: this.vGroupMinEnd,
+                pClass: this.vClass,
+                pLink: this.vLink,
+                pMile: this.vMile,
+                pRes: this.vRes,
+                pComp: this.vComp,
+                pCost: this.vCost,
+                pGroup: this.vGroup,
+                pDataObjec: this.vDataObject
+            };
+        },
+        enumerable: false,
+        configurable: true
+    });
     return TaskItem;
 }());
 exports.TaskItem = TaskItem;
@@ -3820,7 +2563,7 @@ var createTaskInfo = function (pTask, templateStrOrFn) {
     var setupTemplate = function (template) {
         vTaskInfo.innerHTML = '';
         if (template) {
-            var allData_1 = pTask.getAllData();
+            var allData_1 = pTask.allData;
             general_utils_1.internalProperties.forEach(function (key) {
                 var lang;
                 if (general_utils_1.internalPropertiesLang[key]) {
@@ -3841,7 +2584,7 @@ var createTaskInfo = function (pTask, templateStrOrFn) {
             draw_utils_1.newNode(vTaskInfo, 'span', null, 'gTtTemplate', template);
         }
         else {
-            draw_utils_1.newNode(vTaskInfo, 'span', null, 'gTtTitle', pTask.getName());
+            draw_utils_1.newNode(vTaskInfo, 'span', null, 'gTtTitle', pTask.vName);
             if (_this.vShowTaskInfoStartDate == 1) {
                 vTmpDiv = draw_utils_1.newNode(vTaskInfo, 'div', null, 'gTILine gTIsd');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel', _this.vLangs[_this.vLang]['startdate'] + ': ');
@@ -3852,7 +2595,7 @@ var createTaskInfo = function (pTask, templateStrOrFn) {
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel', _this.vLangs[_this.vLang]['enddate'] + ': ');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskText', date_utils_1.formatDateStr(pTask.getEnd(), _this.vDateTaskDisplayFormat, _this.vLangs[_this.vLang]));
             }
-            if (_this.vShowTaskInfoDur == 1 && !pTask.getMile()) {
+            if (_this.vShowTaskInfoDur == 1 && !pTask.vMile) {
                 vTmpDiv = draw_utils_1.newNode(vTaskInfo, 'div', null, 'gTILine gTId');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel', _this.vLangs[_this.vLang]['duration'] + ': ');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getDuration(_this.vFormat, _this.vLangs[_this.vLang]));
@@ -3865,19 +2608,19 @@ var createTaskInfo = function (pTask, templateStrOrFn) {
             if (_this.vShowTaskInfoRes == 1) {
                 vTmpDiv = draw_utils_1.newNode(vTaskInfo, 'div', null, 'gTILine gTIr');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel', _this.vLangs[_this.vLang]['resource'] + ': ');
-                draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getResource());
+                draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.vRes);
             }
-            if (_this.vShowTaskInfoLink == 1 && pTask.getLink() != '') {
+            if (_this.vShowTaskInfoLink == 1 && pTask.vLink != '') {
                 vTmpDiv = draw_utils_1.newNode(vTaskInfo, 'div', null, 'gTILine gTIl');
                 var vTmpNode = draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel');
                 vTmpNode = draw_utils_1.newNode(vTmpNode, 'a', null, 'gTaskText', _this.vLangs[_this.vLang]['moreinfo']);
-                vTmpNode.setAttribute('href', pTask.getLink());
+                vTmpNode.setAttribute('href', pTask.vLink);
             }
             if (_this.vShowTaskInfoNotes == 1) {
                 vTmpDiv = draw_utils_1.newNode(vTaskInfo, 'div', null, 'gTILine gTIn');
                 draw_utils_1.newNode(vTmpDiv, 'span', null, 'gTaskLabel', _this.vLangs[_this.vLang]['notes'] + ': ');
-                if (pTask.getNotes())
-                    vTmpDiv.appendChild(pTask.getNotes());
+                if (pTask.vNotes)
+                    vTmpDiv.appendChild(pTask.vNotes);
             }
         }
     };
@@ -3925,8 +2668,8 @@ var RemoveTaskItem = function (pID) {
     // simply mark the task for removal at this point - actually remove it next time we re-draw the chart
     for (var i = 0; i < this.vTaskList.length; i++) {
         if (this.vTaskList[i].vID == pID)
-            this.vTaskList[i].setToDelete(true);
-        else if (this.vTaskList[i].getParent() == pID)
+            this.vTaskList[i].vToDelete = true;
+        else if (this.vTaskList[i].vParent == pID)
             this.RemoveTaskItem(this.vTaskList[i].vID);
     }
     this.vProcessNeeded = true;
@@ -3959,7 +2702,7 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
     var vComb = false;
     var i = 0;
     for (i = 0; i < pList.length; i++) {
-        if (pList[i].getToDelete()) {
+        if (pList[i].vToDelete) {
             pList.splice(i, 1);
             i--;
         }
@@ -3967,29 +2710,29 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
             vCurItem = pList[i];
     }
     for (i = 0; i < pList.length; i++) {
-        if (pList[i].getParent() == pID) {
+        if (pList[i].vParent == pID) {
             vVisible = pOpen;
-            pList[i].setParItem(vCurItem);
-            pList[i].setVisible(vVisible);
-            if (vVisible == 1 && pList[i].getOpen() == 0)
+            pList[i].vParItem = vCurItem;
+            pList[i].vVisible = vVisible;
+            if (vVisible == 1 && !pList[i].vOpen)
                 vVisible = 0;
-            if (pList[i].getMile() && pList[i].getParItem() && pList[i].getParItem().getGroup() == 2) { //remove milestones owned by combined groups
+            if (pList[i].vMile && pList[i].vParItem && pList[i].vParItem.vGroup == 2) { //remove milestones owned by combined groups
                 pList.splice(i, 1);
                 i--;
                 continue;
             }
-            pList[i].setLevel(vLevel);
-            if (pList[i].getGroup()) {
-                if (pList[i].getParItem() && pList[i].getParItem().getGroup() == 2)
+            pList[i].vLevel = vLevel;
+            if (pList[i].vGroup) {
+                if (pList[i].vParItem && pList[i].vParItem.vGroup == 2)
                     pList[i].setGroup(2);
                 exports.processRows(vList, pList[i].vID, i, vLevel + 1, vVisible, 0);
             }
-            if (pList[i].getStartVar() && (vMinSet == 0 || pList[i].getStartVar() < vMinDate)) {
-                vMinDate = pList[i].getStartVar();
+            if (pList[i].vStart && (vMinSet == 0 || pList[i].vStart < vMinDate)) {
+                vMinDate = pList[i].vStart;
                 vMinSet = 1;
             }
-            if (pList[i].getEndVar() && (vMaxSet == 0 || pList[i].getEndVar() > vMaxDate)) {
-                vMaxDate = pList[i].getEndVar();
+            if (pList[i].vEnd && (vMaxSet == 0 || pList[i].vEnd > vMaxDate)) {
+                vMaxDate = pList[i].vEnd;
                 vMaxSet = 1;
             }
             if (vMinPlanSet == 0 || pList[i].getPlanStart() < vMinPlanDate) {
@@ -4003,15 +2746,15 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
             vNumKid++;
             vWeight += pList[i].getEnd() - pList[i].getStart() + 1;
             vCompSum += pList[i].getCompVal() * (pList[i].getEnd() - pList[i].getStart() + 1);
-            pList[i].setSortIdx(i * pList.length);
+            pList[i].vSortIdx = i * pList.length;
         }
     }
     if (pRow >= 0) {
-        if (pList[pRow].getGroupMinStart() != null && pList[pRow].getGroupMinStart() < vMinDate) {
-            vMinDate = pList[pRow].getGroupMinStart();
+        if (pList[pRow].vGroupMinStart != null && pList[pRow].vGroupMinStart < vMinDate) {
+            vMinDate = pList[pRow].vGroupMinStart;
         }
-        if (pList[pRow].getGroupMinEnd() != null && pList[pRow].getGroupMinEnd() > vMaxDate) {
-            vMaxDate = pList[pRow].getGroupMinEnd();
+        if (pList[pRow].vGroupMinEnd != null && pList[pRow].vGroupMinEnd > vMaxDate) {
+            vMaxDate = pList[pRow].vGroupMinEnd;
         }
         if (vMinDate) {
             pList[pRow].setStart(vMinDate);
@@ -4019,11 +2762,11 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
         if (vMaxDate) {
             pList[pRow].setEnd(vMaxDate);
         }
-        if (pList[pRow].getGroupMinPlanStart() != null && pList[pRow].getGroupMinPlanStart() < vMinPlanDate) {
-            vMinPlanDate = pList[pRow].getGroupMinPlanStart();
+        if (pList[pRow].vGroupMinPlanStart != null && pList[pRow].vGroupMinPlanStart < vMinPlanDate) {
+            vMinPlanDate = pList[pRow].vGroupMinPlanStart;
         }
-        if (pList[pRow].getGroupMinPlanEnd() != null && pList[pRow].getGroupMinPlanEnd() > vMaxPlanDate) {
-            vMaxPlanDate = pList[pRow].getGroupMinPlanEnd();
+        if (pList[pRow].vGroupMinPlanEnd != null && pList[pRow].vGroupMinPlanEnd > vMaxPlanDate) {
+            vMaxPlanDate = pList[pRow].vGroupMinPlanEnd;
         }
         if (vMinPlanDate) {
             pList[pRow].setPlanStart(vMinPlanDate);
@@ -4031,9 +2774,9 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
         if (vMaxPlanDate) {
             pList[pRow].setPlanEnd(vMaxPlanDate);
         }
-        pList[pRow].setNumKid(vNumKid);
-        pList[pRow].setWeight(vWeight);
-        pList[pRow].setCompVal(Math.ceil(vCompSum / vWeight));
+        pList[pRow].vNumKid = vNumKid;
+        pList[pRow].vWeight = vWeight;
+        pList[pRow].vCompVal = Math.ceil(vCompSum / vWeight);
     }
     if (pID == 0 && pUseSort == 1) {
         var bd = void 0;
@@ -4047,20 +2790,20 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
             console.info('after afterTasks', ad, (ad.getTime() - bd.getTime()));
         }
         pList.sort(function (a, b) {
-            return a.getSortIdx() - b.getSortIdx();
+            return a.vSortIdx - b.vSortIdx;
         });
     }
     if (pID == 0 && pUseSort != 1) // Need to sort combined tasks regardless
      {
         for (i = 0; i < pList.length; i++) {
-            if (pList[i].getGroup() == 2) {
+            if (pList[i].vGroup == 2) {
                 vComb = true;
                 var bd = void 0;
                 if (vDebug) {
                     bd = new Date();
                     console.info('before sortTasks', bd);
                 }
-                exports.sortTasks(pList, pList[i].vID, pList[i].getSortIdx() + 1);
+                exports.sortTasks(pList, pList[i].vID, pList[i].vSortIdx + 1);
                 if (vDebug) {
                     var ad = new Date();
                     console.info('after sortTasks', ad, (ad.getTime() - bd.getTime()));
@@ -4069,7 +2812,7 @@ var processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug) {
         }
         if (vComb == true)
             pList.sort(function (a, b) {
-                return a.getSortIdx() - b.getSortIdx();
+                return a.vSortIdx - b.vSortIdx;
             });
     }
 };
@@ -4478,18 +3221,18 @@ var CalcTaskXY = function () {
     var vHeight = Math.floor((this.getRowHeight() / 2));
     for (var i = 0; i < vList.length; i++) {
         vID = vList[i].vID;
-        vBarDiv = vList[i].getBarDiv();
-        vTaskDiv = vList[i].getTaskDiv();
-        if ((vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)) {
-            vParDiv = vList[i].getParItem().getChildRow();
+        vBarDiv = vList[i].vBarDiv;
+        vTaskDiv = vList[i].vTaskDiv;
+        if ((vList[i].vParItem && vList[i].vParItem.vGroup == 2)) {
+            vParDiv = vList[i].vParItem.vChildRow;
         }
         else
-            vParDiv = vList[i].getChildRow();
+            vParDiv = vList[i].vChildRow;
         if (vBarDiv) {
-            vList[i].setStartX(vBarDiv.offsetLeft + 1);
-            vList[i].setStartY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
-            vList[i].setEndX(vBarDiv.offsetLeft + vBarDiv.offsetWidth + 1);
-            vList[i].setEndY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
+            vList[i].x1 = vBarDiv.offsetLeft + 1;
+            vList[i].y1 = vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1;
+            vList[i].x2 = vBarDiv.offsetLeft + vBarDiv.offsetWidth + 1;
+            vList[i].y2 = vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1;
         }
     }
 };
@@ -5334,34 +4077,34 @@ var getXMLTask = function (pID, pIdx) {
         /* Simplest way to return case sensitive node names is to just build a string */
         vTask = '<task>';
         vTask += '<pID>' + this.vTaskList[vIdx].vID + '</pID>';
-        vTask += '<pName>' + this.vTaskList[vIdx].getName() + '</pName>';
+        vTask += '<pName>' + this.vTaskList[vIdx].vName + '</pName>';
         vTask += '<pStart>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pStart>';
         vTask += '<pEnd>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pEnd>';
         vTask += '<pPlanStart>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanStart>';
         vTask += '<pPlanEnd>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanEnd>';
         vTask += '<pDuration>' + this.vTaskList[vIdx].getDuration() + '</pDuration>';
-        vTask += '<pClass>' + this.vTaskList[vIdx].getClass() + '</pClass>';
-        vTask += '<pLink>' + this.vTaskList[vIdx].getLink() + '</pLink>';
-        vTask += '<pMile>' + this.vTaskList[vIdx].getMile() + '</pMile>';
-        if (this.vTaskList[vIdx].getResource() != '\u00A0')
-            vTask += '<pRes>' + this.vTaskList[vIdx].getResource() + '</pRes>';
+        vTask += '<pClass>' + this.vTaskList[vIdx].vClass + '</pClass>';
+        vTask += '<pLink>' + this.vTaskList[vIdx].vLink + '</pLink>';
+        vTask += '<pMile>' + this.vTaskList[vIdx].vMile + '</pMile>';
+        if (this.vTaskList[vIdx].vRes != '\u00A0')
+            vTask += '<pRes>' + this.vTaskList[vIdx].vRes + '</pRes>';
         vTask += '<pComp>' + this.vTaskList[vIdx].getCompVal() + '</pComp>';
-        vTask += '<pCost>' + this.vTaskList[vIdx].getCost() + '</pCost>';
-        vTask += '<pGroup>' + this.vTaskList[vIdx].getGroup() + '</pGroup>';
-        vTask += '<pParent>' + this.vTaskList[vIdx].getParent() + '</pParent>';
-        vTask += '<pOpen>' + this.vTaskList[vIdx].getOpen() + '</pOpen>';
+        vTask += '<pCost>' + this.vTaskList[vIdx].vCost + '</pCost>';
+        vTask += '<pGroup>' + this.vTaskList[vIdx].vGroup + '</pGroup>';
+        vTask += '<pParent>' + this.vTaskList[vIdx].vParent + '</pParent>';
+        vTask += '<pOpen>' + this.vTaskList[vIdx].vOpen + '</pOpen>';
         vTask += '<pDepend>';
-        var vDepList = this.vTaskList[vIdx].getDepend();
+        var vDepList = this.vTaskList[vIdx].vDepend;
         for (i = 0; i < vDepList.length; i++) {
             if (i > 0)
                 vTask += ',';
             if (vDepList[i] > 0)
-                vTask += vDepList[i] + this.vTaskList[vIdx].getDepType()[i];
+                vTask += vDepList[i] + this.vTaskList[vIdx].vDependType[i];
         }
         vTask += '</pDepend>';
-        vTask += '<pCaption>' + this.vTaskList[vIdx].getCaption() + '</pCaption>';
+        vTask += '<pCaption>' + this.vTaskList[vIdx].vCaption + '</pCaption>';
         var vTmpFrag = document.createDocumentFragment();
-        var vTmpDiv = draw_utils_1.newNode(vTmpFrag, 'div', null, null, this.vTaskList[vIdx].getNotes().innerHTML);
+        var vTmpDiv = draw_utils_1.newNode(vTmpFrag, 'div', null, null, this.vTaskList[vIdx].vNotes.innerHTML);
         vTask += '<pNotes>' + vTmpDiv.innerHTML + '</pNotes>';
         vTask += '</task>';
     }

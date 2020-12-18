@@ -291,32 +291,32 @@ export const getXMLTask = function (pID, pIdx) {
     /* Simplest way to return case sensitive node names is to just build a string */
     vTask = '<task>';
     vTask += '<pID>' + this.vTaskList[vIdx].vID + '</pID>';
-    vTask += '<pName>' + this.vTaskList[vIdx].getName() + '</pName>';
+    vTask += '<pName>' + this.vTaskList[vIdx].vName + '</pName>';
     vTask += '<pStart>' + formatDateStr(this.vTaskList[vIdx].getStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pStart>';
     vTask += '<pEnd>' + formatDateStr(this.vTaskList[vIdx].getEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pEnd>';
     vTask += '<pPlanStart>' + formatDateStr(this.vTaskList[vIdx].getPlanStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanStart>';
     vTask += '<pPlanEnd>' + formatDateStr(this.vTaskList[vIdx].getPlanEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanEnd>';
     vTask += '<pDuration>' + this.vTaskList[vIdx].getDuration() + '</pDuration>';
-    vTask += '<pClass>' + this.vTaskList[vIdx].getClass() + '</pClass>';
-    vTask += '<pLink>' + this.vTaskList[vIdx].getLink() + '</pLink>';
-    vTask += '<pMile>' + this.vTaskList[vIdx].getMile() + '</pMile>';
-    if (this.vTaskList[vIdx].getResource() != '\u00A0') vTask += '<pRes>' + this.vTaskList[vIdx].getResource() + '</pRes>';
+    vTask += '<pClass>' + this.vTaskList[vIdx].vClass + '</pClass>';
+    vTask += '<pLink>' + this.vTaskList[vIdx].vLink + '</pLink>';
+    vTask += '<pMile>' + this.vTaskList[vIdx].vMile + '</pMile>';
+    if (this.vTaskList[vIdx].vRes != '\u00A0') vTask += '<pRes>' + this.vTaskList[vIdx].vRes + '</pRes>';
     vTask += '<pComp>' + this.vTaskList[vIdx].getCompVal() + '</pComp>';
-    vTask += '<pCost>' + this.vTaskList[vIdx].getCost() + '</pCost>';
-    vTask += '<pGroup>' + this.vTaskList[vIdx].getGroup() + '</pGroup>';
-    vTask += '<pParent>' + this.vTaskList[vIdx].getParent() + '</pParent>';
-    vTask += '<pOpen>' + this.vTaskList[vIdx].getOpen() + '</pOpen>';
+    vTask += '<pCost>' + this.vTaskList[vIdx].vCost + '</pCost>';
+    vTask += '<pGroup>' + this.vTaskList[vIdx].vGroup + '</pGroup>';
+    vTask += '<pParent>' + this.vTaskList[vIdx].vParent + '</pParent>';
+    vTask += '<pOpen>' + this.vTaskList[vIdx].vOpen + '</pOpen>';
     vTask += '<pDepend>';
-    let vDepList = this.vTaskList[vIdx].getDepend();
+    let vDepList = this.vTaskList[vIdx].vDepend;
     for (i = 0; i < vDepList.length; i++) {
       if (i > 0) vTask += ',';
-      if (vDepList[i] > 0) vTask += vDepList[i] + this.vTaskList[vIdx].getDepType()[i];
+      if (vDepList[i] > 0) vTask += vDepList[i] + this.vTaskList[vIdx].vDependType[i];
     }
     vTask += '</pDepend>';
-    vTask += '<pCaption>' + this.vTaskList[vIdx].getCaption() + '</pCaption>';
+    vTask += '<pCaption>' + this.vTaskList[vIdx].vCaption + '</pCaption>';
 
     let vTmpFrag = document.createDocumentFragment();
-    let vTmpDiv = newNode(vTmpFrag, 'div', null, null, this.vTaskList[vIdx].getNotes().innerHTML);
+    let vTmpDiv = newNode(vTmpFrag, 'div', null, null, this.vTaskList[vIdx].vNotes.innerHTML);
     vTask += '<pNotes>' + vTmpDiv.innerHTML + '</pNotes>';
     vTask += '</task>';
   }

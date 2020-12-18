@@ -202,14 +202,14 @@ function clearTasks() {
 }
 
 function print() {
-  const tasks = g.vTaskList.map(e => ({ ...e.getAllData(), ...e.getDataObject() }));
+  const tasks = g.vTaskList.map(e => ({ ...e.getAllData(), ...e.vDataObject }));
   console.log(tasks);
 }
 
 
 function editValue(list, task, event, cell, column) {
   console.log(list, task, event, cell, column)
-  const found = list.find(item => item.pID == task.getOriginalID());
+  const found = list.find(item => item.pID == task.vID);
   if (!found) {
     return;
   }
@@ -220,10 +220,10 @@ function editValue(list, task, event, cell, column) {
 
 function drawCustomElements(g) {
   for (const item of g.getList()) {
-    const dataObj = item.getDataObject();
+    const dataObj = item.vDataObject;
     if (dataObj && dataObj.deadline) {
       const x = g.chartRowDateToX(new Date(dataObj.deadline));
-      const td = item.getChildRow().querySelector('td');
+      const td = item.vChildRow.querySelector('td');
       td.style.position = 'relative';
       const div = document.createElement('div');
       div.style.left = `${x}px`;
@@ -235,21 +235,21 @@ function drawCustomElements(g) {
 
 function generateTooltip(task) {
   // default tooltip for level 1
-  if (task.getLevel() === 1) return;
+  if (task.vLevel === 1) return;
 
   // string tooltip for level 2. Show completed/total child count and current timestamp
-  if (task.getLevel() === 2) {
+  if (task.vLevel === 2) {
     let childCount = 0;
     let complete = 0;
     for (const item of g.getList()) {
-      if (item.getParent() == task.getID()) {
+      if (item.vParent == task.vID) {
         if (item.getCompVal() === 100) {
           complete++;
         }
         childCount++;
       }
     }
-    console.log(`Generated dynamic sync template for '${task.getName()}'`);
+    console.log(`Generated dynamic sync template for '${task.vName}'`);
     return `
       <dl>
         <dt>Name:</dt><dd>{{pName}}</dd>
@@ -263,7 +263,7 @@ function generateTooltip(task) {
   return new Promise((resolve, reject) => {
     const delay = Math.random() * 3000;
     setTimeout(() => {
-      console.log(`Generated dynamic async template for '${task.getName()}'`);
+      console.log(`Generated dynamic async template for '${task.vName}'`);
       resolve(`Tooltip content from the promise after ${Math.round(delay)}ms`);
     }, delay);
   });

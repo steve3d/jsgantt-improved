@@ -38,7 +38,7 @@ export const addJSONTask = function (pGanttVar, pJsonObj) {
     let planend;
     let itemClass;
     let link = '';
-    let milestone = 0;
+    let milestone: boolean = false;
     let resourceName = '';
     let completion;
     let group = 0;

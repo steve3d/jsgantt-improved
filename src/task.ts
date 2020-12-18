@@ -18,10 +18,10 @@ export const sortTasks = function (pList, pID, pIdx) {
     return pIdx;
   }
   let sortIdx = pIdx;
-  let sortArr = new Array();
+  let sortArr = [];
 
   for (let i = 0; i < pList.length; i++) {
-    if (pList[i].getParent() == pID) sortArr.push(pList[i]);
+    if (pList[i].vParent == pID) sortArr.push(pList[i]);
   }
 
   if (sortArr.length > 0) {
@@ -36,7 +36,7 @@ export const sortTasks = function (pList, pID, pIdx) {
   for (let j = 0; j < sortArr.length; j++) {
     for (let i = 0; i < pList.length; i++) {
       if (pList[i].vID == sortArr[j].vID) {
-        pList[i].setSortIdx(sortIdx++);
+        pList[i].vSortIdx = sortIdx++;
         sortIdx = sortTasks(pList, pList[i].vID, sortIdx);
       }
     }
@@ -77,10 +77,6 @@ export const TaskItemObject = function (object) {
 };
 
 export class TaskItem {
-  vGantt: any;
-  _id: string;
-  vID: string;
-  vName: string;
   vStart: Date = null;
   vEnd: Date = null;
   vPlanStart: Date = null;
@@ -89,28 +85,17 @@ export class TaskItem {
   vGroupMinEnd: Date = null;
   vGroupMinPlanStart: Date = null;
   vGroupMinPlanEnd: Date = null;
-  vClass: string;
-  vLink: string;
-  vMile: boolean;
-  vRes: string;
-  vComp: number;
-  vCost: number;
-  vGroup: number;
-  vDataObject: any;
+  vRes: string = '\u00A0';
   vCompVal: number;
-  vParent: string;
 
-  vOpen: boolean;
-  vDepend: any[];
-  vDependType: any[];
-  vCaption: string;
-  vDuration: string;
-  vBarText: string;
-  vLevel: number;
-  vNumKid: number;
-  vWeight: number;
-  vVisible: boolean = true;
-  vSortIdx: number;
+  vDepend: any[] = null;
+  vDependType: any[] = null;
+
+  vLevel = 0;
+  vNumKid = 0;
+  vWeight = 0;
+  vVisible = true;
+  vSortIdx = 0;
   vToDelete = false;
   x1;
   y1;
@@ -118,68 +103,48 @@ export class TaskItem {
   y2;
   vNotes: HTMLElement;
   vParItem: TaskItem;
-  vCellDiv: HTMLElement;
-  vBarDiv: HTMLElement;
-  vTaskDiv: HTMLElement;
-  vPlanTaskDiv: HTMLElement;
-  vListChildRow = null;
-  vChildRow = null;
-  vGroupSpan = null;
+  vCellDiv: HTMLDivElement;
+  vBarDiv: HTMLDivElement;
+  vTaskDiv: HTMLDivElement;
+  vPlanTaskDiv: HTMLDivElement;
+  vListChildRow: HTMLElement;
+  vChildRow: HTMLElement;
+  vGroupSpan: HTMLSpanElement;
 
-  constructor(pID,
-              pName,
-              pStart,
-              pEnd,
-              pClass,
-              pLink,
-              pMile,
-              pRes,
-              pComp,
-              pGroup,
-              pParent,
-              pOpen,
-              pDepend,
-              pCaption,
-              pNotes,
-              pGantt,
-              pCost?,
-              pPlanStart?,
-              pPlanEnd?,
-              pDuration?,
-              pBarText?,
-              pDataObject?) {
-    this.vGantt = pGantt ? pGantt : this;
-    this._id = document.createTextNode(pID).data;
-    this.vID = hashKey(document.createTextNode(pID).data);
-    this.vName = document.createTextNode(pName).data;
-    this.vClass = document.createTextNode(pClass).data;
-    this.vLink = document.createTextNode(pLink).data;
-    this.vMile = parseInt(document.createTextNode(pMile).data) == 1;
+  constructor(public vID: number,
+              public vName: string,
+              pStart: Date | string,
+              pEnd: Date | string,
+              public vClass: string,
+              public vLink: string,
+              public vMile: boolean,
+              public pRes,
+              public vComp: number,
+              public vGroup: number,
+              public vParent: number,
+              public vOpen: boolean,
+              pDepend: string,
+              public vCaption: string,
+              pNotes: string,
+              public vGantt,
+              public vCost?: number,
+              pPlanStart?: Date | string,
+              pPlanEnd?: Date | string,
+              public vDuration?: string,
+              public vBarText?: string,
+              public vDataObject?: any) {
+
+    this.vID = hashKey(this.vID.toString());
     this.vRes = document.createTextNode(pRes).data;
-    this.vComp = parseFloat(document.createTextNode(pComp).data);
-    this.vCost = parseInt(document.createTextNode(pCost).data);
-    this.vGroup = parseInt(document.createTextNode(pGroup).data);
-    this.vDataObject = pDataObject;
 
-    let parent = document.createTextNode(pParent).data;
-    if (parent && parent !== '0') {
-      parent = hashKey(parent).toString();
+    if (this.vParent && this.vParent !== 0) {
+      this.vParent = hashKey(this.vParent.toString()).toString();
     }
 
-    this.vParent = parent;
+    this.vOpen = (this.vGroup == 2) ? true : this.vOpen;
+    this.vDepend = [];
+    this.vDependType = [];
 
-    this.vOpen = (this.vGroup == 2) ? true : parseInt(document.createTextNode(pOpen).data) === 1;
-    this.vDepend = new Array();
-    this.vDependType = new Array();
-    this.vCaption = document.createTextNode(pCaption).data;
-    this.vDuration = pDuration || '';
-    this.vBarText = pBarText || '';
-    this.vLevel = 0;
-    this.vNumKid = 0;
-    this.vWeight = 0;
-    this.vVisible = true;
-    this.vSortIdx = 0;
-    this.vToDelete = false;
 
     this.vNotes = document.createElement('span');
     this.vNotes.className = 'gTaskNotes';
@@ -239,28 +204,8 @@ export class TaskItem {
 
   }
 
-  getID() {
-    return this.vID;
-  };
-
-  getOriginalID() {
-    return this._id;
-  };
-
-  getGantt() {
-    return this.vGantt;
-  }
-
-  getName() {
-    return this.vName;
-  };
-
   getStart() {
     return this.vStart ?? this.vPlanStart ?? new Date();
-  };
-
-  getStartVar() {
-    return this.vStart;
   };
 
   getEnd() {
@@ -292,10 +237,6 @@ export class TaskItem {
     } else return new Date();
   };
 
-  getEndVar() {
-    return this.vEnd;
-  };
-
   getPlanStart() {
     return this.vPlanStart ?? this.vStart;
   };
@@ -304,57 +245,6 @@ export class TaskItem {
     return this.vPlanEnd ?? this.vEnd;
   };
 
-  getCost() {
-    return this.vCost;
-  };
-
-  getGroupMinStart() {
-    return this.vGroupMinStart;
-  };
-
-  getGroupMinEnd() {
-    return this.vGroupMinEnd;
-  };
-
-  getGroupMinPlanStart() {
-    return this.vGroupMinPlanStart;
-  };
-
-  getGroupMinPlanEnd() {
-    return this.vGroupMinPlanEnd;
-  };
-
-  getClass() {
-    return this.vClass;
-  };
-
-  getLink() {
-    return this.vLink;
-  };
-
-  getMile() {
-    return this.vMile;
-  };
-
-  getDepend() {
-    return this.vDepend ?? null;
-  };
-
-  getDataObject() {
-    return this.vDataObject;
-  };
-
-  getDepType() {
-    return this.vDependType ?? null;
-  };
-
-  getCaption() {
-    return this.vCaption ?? '';
-  };
-
-  getResource() {
-    return this.vRes ?? '\u00A0';
-  };
 
   getCompVal() {
     return this.vComp ?? this.vCompVal ?? 0;
@@ -368,19 +258,7 @@ export class TaskItem {
     if (this.vComp) return (100 - this.vComp) + '%'; else if (this.vCompVal) return (100 - this.vCompVal) + '%'; else return '';
   };
 
-  getNotes() {
-    return this.vNotes;
-  };
-
-  getSortIdx() {
-    return this.vSortIdx;
-  };
-
-  getToDelete() {
-    return this.vToDelete;
-  };
-
-  getDuration(pFormat, pLang) {
+  getDuration(pFormat: string, pLang) {
     if (this.vMile) {
       this.vDuration = '-';
     } else if (!this.vEnd && !this.vStart && this.vPlanStart && this.vPlanEnd) {
@@ -393,7 +271,7 @@ export class TaskItem {
     return this.vDuration;
   };
 
-  calculateVDuration(pFormat, pLang, start, end) {
+  private calculateVDuration(pFormat: string, pLang, start: Date, end: Date): string {
     let vUnits = null;
     switch (pFormat) {
       case 'week':
@@ -443,115 +321,7 @@ export class TaskItem {
     return this.vDuration;
   }
 
-  getBarText() {
-    return this.vBarText;
-  };
-
-  getParent() {
-    return this.vParent;
-  };
-
-  getGroup() {
-    return this.vGroup;
-  };
-
-  getOpen() {
-    return this.vOpen;
-  };
-
-  getLevel() {
-    return this.vLevel;
-  };
-
-  getNumKids() {
-    return this.vNumKid;
-  };
-
-  getWeight() {
-    return this.vWeight;
-  };
-
-  getStartX() {
-    return this.x1;
-  };
-
-  getStartY() {
-    return this.y1;
-  };
-
-  getEndX() {
-    return this.x2;
-  };
-
-  getEndY() {
-    return this.y2;
-  };
-
-  getVisible() {
-    return this.vVisible;
-  };
-
-  getParItem() {
-    return this.vParItem;
-  };
-
-  getCellDiv() {
-    return this.vCellDiv;
-  };
-
-  getBarDiv() {
-    return this.vBarDiv;
-  };
-
-  getTaskDiv() {
-    return this.vTaskDiv;
-  };
-
-  getPlanTaskDiv() {
-    return this.vPlanTaskDiv;
-  };
-
-  getChildRow() {
-    return this.vChildRow;
-  };
-
-  getListChildRow() {
-    return this.vListChildRow;
-  };
-
-  getGroupSpan() {
-    return this.vGroupSpan;
-  };
-
-  setName(pName) {
-    this.vName = pName;
-  };
-
-  setNotes(pNotes) {
-    this.vNotes = pNotes;
-  };
-
-  setClass(pClass) {
-    this.vClass = pClass;
-  };
-
-  setCost(pCost) {
-    this.vCost = pCost;
-  };
-
-  setResource(pRes) {
-    this.vRes = pRes;
-  };
-
-  setDuration(pDuration) {
-    this.vDuration = pDuration;
-  };
-
-  setDataObject(pDataObject) {
-    this.vDataObject = pDataObject;
-  };
-
-  setStart(pStart) {
+  setStart(pStart: Date | string) {
     if (pStart instanceof Date) {
       this.vStart = pStart;
     } else {
@@ -562,7 +332,7 @@ export class TaskItem {
     }
   };
 
-  setEnd(pEnd) {
+  setEnd(pEnd: Date | string) {
     if (pEnd instanceof Date) {
       this.vEnd = pEnd;
     } else {
@@ -578,117 +348,22 @@ export class TaskItem {
     else this.vPlanStart = new Date(pPlanStart);
   };
 
-  setPlanEnd(pPlanEnd) {
+  setPlanEnd(pPlanEnd: Date | string) {
     if (pPlanEnd instanceof Date) this.vPlanEnd = pPlanEnd;
     else this.vPlanEnd = new Date(pPlanEnd);
   };
 
-  setGroupMinStart(pStart) {
-    if (pStart instanceof Date) this.vGroupMinStart = pStart;
-  };
-
-  setGroupMinEnd(pEnd) {
-    if (pEnd instanceof Date) this.vGroupMinEnd = pEnd;
-  };
-
-  setLevel(pLevel) {
-    this.vLevel = parseInt(document.createTextNode(pLevel).data);
-  };
-
-  setNumKid(pNumKid) {
-    this.vNumKid = parseInt(document.createTextNode(pNumKid).data);
-  };
-
-  setWeight(pWeight) {
-    this.vWeight = parseInt(document.createTextNode(pWeight).data);
-  };
-
-  setCompVal(pCompVal) {
-    this.vCompVal = parseFloat(document.createTextNode(pCompVal).data);
-  };
-
-  setComp(pComp) {
-    this.vComp = parseInt(document.createTextNode(pComp).data);
-  };
-
-  setStartX(pX) {
-    this.x1 = parseInt(document.createTextNode(pX).data);
-  };
-
-  setStartY(pY) {
-    this.y1 = parseInt(document.createTextNode(pY).data);
-  };
-
-  setEndX(pX) {
-    this.x2 = parseInt(document.createTextNode(pX).data);
-  };
-
-  setEndY(pY) {
-    this.y2 = parseInt(document.createTextNode(pY).data);
-  };
-
-  setOpen(pOpen) {
-    this.vOpen = parseInt(document.createTextNode(pOpen).data) === 1;
-  };
-
-  setVisible(pVisible) {
-    this.vVisible = parseInt(document.createTextNode(pVisible).data) === 1;
-  };
-
-  setSortIdx(pSortIdx) {
-    this.vSortIdx = parseInt(document.createTextNode(pSortIdx).data);
-  };
-
-  setToDelete(pToDelete) {
-    if (pToDelete) this.vToDelete = true; else this.vToDelete = false;
-  };
-
-  setParItem(pParItem) {
-    if (pParItem) this.vParItem = pParItem;
-  };
-
-  setCellDiv(pCellDiv) {
-    if (typeof HTMLDivElement !== 'function' || pCellDiv instanceof HTMLDivElement) this.vCellDiv = pCellDiv;
-  }; //"typeof HTMLDivElement !== 'function'" to play nice with ie6 and 7
-  setGroup(pGroup) {
-    if (pGroup === true || pGroup === 'true') {
+  setGroup(pGroup: 0 | 1 | 2) {
+    if (pGroup === 1) {
       this.vGroup = 1;
-    } else if (pGroup === false || pGroup === 'false') {
+    } else if (pGroup === 0) {
       this.vGroup = 0;
     } else {
-      this.vGroup = parseInt(document.createTextNode(pGroup).data);
+      this.vGroup = pGroup;
     }
   };
 
-  setBarText(pBarText) {
-    if (pBarText) this.vBarText = pBarText;
-  };
-
-  setBarDiv(pDiv) {
-    if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement) this.vBarDiv = pDiv;
-  };
-
-  setTaskDiv(pDiv) {
-    if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement) this.vTaskDiv = pDiv;
-  };
-
-  setPlanTaskDiv(pDiv) {
-    if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement) this.vPlanTaskDiv = pDiv;
-  };
-
-  setChildRow(pRow) {
-    if (typeof HTMLTableRowElement !== 'function' || pRow instanceof HTMLTableRowElement) this.vChildRow = pRow;
-  };
-
-  setListChildRow(pRow) {
-    if (typeof HTMLTableRowElement !== 'function' || pRow instanceof HTMLTableRowElement) this.vListChildRow = pRow;
-  };
-
-  setGroupSpan(pSpan) {
-    if (typeof HTMLSpanElement !== 'function' || pSpan instanceof HTMLSpanElement) this.vGroupSpan = pSpan;
-  };
-
-  getAllData() {
+  get allData() {
     return {
       pID: this.vID,
       pName: this.vName,
@@ -726,7 +401,7 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
   const setupTemplate = template => {
     vTaskInfo.innerHTML = '';
     if (template) {
-      let allData = pTask.getAllData();
+      let allData = pTask.allData;
       internalProperties.forEach(key => {
         let lang;
         if (internalPropertiesLang[key]) {
@@ -747,7 +422,7 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
       });
       newNode(vTaskInfo, 'span', null, 'gTtTemplate', template);
     } else {
-      newNode(vTaskInfo, 'span', null, 'gTtTitle', pTask.getName());
+      newNode(vTaskInfo, 'span', null, 'gTtTitle', pTask.vName);
       if (this.vShowTaskInfoStartDate == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIsd');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['startdate'] + ': ');
@@ -758,7 +433,7 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['enddate'] + ': ');
         newNode(vTmpDiv, 'span', null, 'gTaskText', formatDateStr(pTask.getEnd(), this.vDateTaskDisplayFormat, this.vLangs[this.vLang]));
       }
-      if (this.vShowTaskInfoDur == 1 && !pTask.getMile()) {
+      if (this.vShowTaskInfoDur == 1 && !pTask.vMile) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTId');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['duration'] + ': ');
         newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getDuration(this.vFormat, this.vLangs[this.vLang]));
@@ -771,18 +446,18 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
       if (this.vShowTaskInfoRes == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIr');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['resource'] + ': ');
-        newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getResource());
+        newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.vRes);
       }
-      if (this.vShowTaskInfoLink == 1 && pTask.getLink() != '') {
+      if (this.vShowTaskInfoLink == 1 && pTask.vLink != '') {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIl');
         let vTmpNode = newNode(vTmpDiv, 'span', null, 'gTaskLabel');
         vTmpNode = newNode(vTmpNode, 'a', null, 'gTaskText', this.vLangs[this.vLang]['moreinfo']);
-        vTmpNode.setAttribute('href', pTask.getLink());
+        vTmpNode.setAttribute('href', pTask.vLink);
       }
       if (this.vShowTaskInfoNotes == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIn');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['notes'] + ': ');
-        if (pTask.getNotes()) vTmpDiv.appendChild(pTask.getNotes());
+        if (pTask.vNotes) vTmpDiv.appendChild(pTask.vNotes);
       }
     }
   };
@@ -830,8 +505,8 @@ export const AddTaskItemObject = function (object) {
 export const RemoveTaskItem = function (pID) {
   // simply mark the task for removal at this point - actually remove it next time we re-draw the chart
   for (let i = 0; i < this.vTaskList.length; i++) {
-    if (this.vTaskList[i].vID == pID) this.vTaskList[i].setToDelete(true);
-    else if (this.vTaskList[i].getParent() == pID) this.RemoveTaskItem(this.vTaskList[i].vID);
+    if (this.vTaskList[i].vID == pID) this.vTaskList[i].vToDelete = true;
+    else if (this.vTaskList[i].vParent == pID) this.RemoveTaskItem(this.vTaskList[i].vID);
   }
   this.vProcessNeeded = true;
 };
@@ -863,7 +538,7 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
   let i = 0;
 
   for (i = 0; i < pList.length; i++) {
-    if (pList[i].getToDelete()) {
+    if (pList[i].vToDelete) {
       pList.splice(i, 1);
       i--;
     }
@@ -871,32 +546,32 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
   }
 
   for (i = 0; i < pList.length; i++) {
-    if (pList[i].getParent() == pID) {
+    if (pList[i].vParent == pID) {
       vVisible = pOpen;
-      pList[i].setParItem(vCurItem);
-      pList[i].setVisible(vVisible);
-      if (vVisible == 1 && pList[i].getOpen() == 0) vVisible = 0;
+      pList[i].vParItem = vCurItem;
+      pList[i].vVisible = vVisible;
+      if (vVisible == 1 && !pList[i].vOpen) vVisible = 0;
 
-      if (pList[i].getMile() && pList[i].getParItem() && pList[i].getParItem().getGroup() == 2) {//remove milestones owned by combined groups
+      if (pList[i].vMile && pList[i].vParItem && pList[i].vParItem.vGroup == 2) {//remove milestones owned by combined groups
         pList.splice(i, 1);
         i--;
         continue;
       }
 
-      pList[i].setLevel(vLevel);
+      pList[i].vLevel = vLevel;
 
-      if (pList[i].getGroup()) {
-        if (pList[i].getParItem() && pList[i].getParItem().getGroup() == 2) pList[i].setGroup(2);
+      if (pList[i].vGroup) {
+        if (pList[i].vParItem && pList[i].vParItem.vGroup == 2) pList[i].setGroup(2);
         processRows(vList, pList[i].vID, i, vLevel + 1, vVisible, 0);
       }
 
-      if (pList[i].getStartVar() && (vMinSet == 0 || pList[i].getStartVar() < vMinDate)) {
-        vMinDate = pList[i].getStartVar();
+      if (pList[i].vStart && (vMinSet == 0 || pList[i].vStart < vMinDate)) {
+        vMinDate = pList[i].vStart;
         vMinSet = 1;
       }
 
-      if (pList[i].getEndVar() && (vMaxSet == 0 || pList[i].getEndVar() > vMaxDate)) {
-        vMaxDate = pList[i].getEndVar();
+      if (pList[i].vEnd && (vMaxSet == 0 || pList[i].vEnd > vMaxDate)) {
+        vMaxDate = pList[i].vEnd;
         vMaxSet = 1;
       }
 
@@ -913,17 +588,17 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
       vNumKid++;
       vWeight += pList[i].getEnd() - pList[i].getStart() + 1;
       vCompSum += pList[i].getCompVal() * (pList[i].getEnd() - pList[i].getStart() + 1);
-      pList[i].setSortIdx(i * pList.length);
+      pList[i].vSortIdx = i * pList.length;
     }
   }
 
   if (pRow >= 0) {
-    if (pList[pRow].getGroupMinStart() != null && pList[pRow].getGroupMinStart() < vMinDate) {
-      vMinDate = pList[pRow].getGroupMinStart();
+    if (pList[pRow].vGroupMinStart != null && pList[pRow].vGroupMinStart < vMinDate) {
+      vMinDate = pList[pRow].vGroupMinStart;
     }
 
-    if (pList[pRow].getGroupMinEnd() != null && pList[pRow].getGroupMinEnd() > vMaxDate) {
-      vMaxDate = pList[pRow].getGroupMinEnd();
+    if (pList[pRow].vGroupMinEnd != null && pList[pRow].vGroupMinEnd > vMaxDate) {
+      vMaxDate = pList[pRow].vGroupMinEnd;
     }
     if (vMinDate) {
       pList[pRow].setStart(vMinDate);
@@ -932,12 +607,12 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
       pList[pRow].setEnd(vMaxDate);
     }
 
-    if (pList[pRow].getGroupMinPlanStart() != null && pList[pRow].getGroupMinPlanStart() < vMinPlanDate) {
-      vMinPlanDate = pList[pRow].getGroupMinPlanStart();
+    if (pList[pRow].vGroupMinPlanStart != null && pList[pRow].vGroupMinPlanStart < vMinPlanDate) {
+      vMinPlanDate = pList[pRow].vGroupMinPlanStart;
     }
 
-    if (pList[pRow].getGroupMinPlanEnd() != null && pList[pRow].getGroupMinPlanEnd() > vMaxPlanDate) {
-      vMaxPlanDate = pList[pRow].getGroupMinPlanEnd();
+    if (pList[pRow].vGroupMinPlanEnd != null && pList[pRow].vGroupMinPlanEnd > vMaxPlanDate) {
+      vMaxPlanDate = pList[pRow].vGroupMinPlanEnd;
     }
     if (vMinPlanDate) {
       pList[pRow].setPlanStart(vMinPlanDate);
@@ -945,9 +620,9 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
     if (vMaxPlanDate) {
       pList[pRow].setPlanEnd(vMaxPlanDate);
     }
-    pList[pRow].setNumKid(vNumKid);
-    pList[pRow].setWeight(vWeight);
-    pList[pRow].setCompVal(Math.ceil(vCompSum / vWeight));
+    pList[pRow].vNumKid = vNumKid;
+    pList[pRow].vWeight = vWeight;
+    pList[pRow].vCompVal = Math.ceil(vCompSum / vWeight);
   }
 
   if (pID == 0 && pUseSort == 1) {
@@ -962,20 +637,20 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
       console.info('after afterTasks', ad, (ad.getTime() - bd.getTime()));
     }
     pList.sort(function (a, b) {
-      return a.getSortIdx() - b.getSortIdx();
+      return a.vSortIdx - b.vSortIdx;
     });
   }
   if (pID == 0 && pUseSort != 1) // Need to sort combined tasks regardless
   {
     for (i = 0; i < pList.length; i++) {
-      if (pList[i].getGroup() == 2) {
+      if (pList[i].vGroup == 2) {
         vComb = true;
         let bd;
         if (vDebug) {
           bd = new Date();
           console.info('before sortTasks', bd);
         }
-        sortTasks(pList, pList[i].vID, pList[i].getSortIdx() + 1);
+        sortTasks(pList, pList[i].vID, pList[i].vSortIdx + 1);
         if (vDebug) {
           const ad = new Date();
           console.info('after sortTasks', ad, (ad.getTime() - bd.getTime()));
@@ -983,7 +658,7 @@ export const processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, 
       }
     }
     if (vComb == true) pList.sort(function (a, b) {
-      return a.getSortIdx() - b.getSortIdx();
+      return a.vSortIdx - b.vSortIdx;
     });
   }
 };
