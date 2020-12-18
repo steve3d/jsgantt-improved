@@ -1,10 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./dist/src",
     "baseUrl": "src",
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -20,6 +20,7 @@
       "jsgantt-improved": [ "dist/jsgantt-improved" ]
     }
   },
+  "include": ["src/**/*"],
   "exclude": [
     ".ng_build"
   ]

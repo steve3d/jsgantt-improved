@@ -229,14 +229,16 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
         break;
     }
   }
+
+  console.log(pDate, pDateFormatArr);
   return vDateStr;
 };
 
 export const parseDateFormatStr = function (pFormatStr) {
   let vComponantStr = '';
   let vCurrChar = '';
-  let vSeparators = new RegExp('[\/\\ -.,\'":]');
-  let vDateFormatArray = new Array();
+  let vSeparators = new RegExp('[\/\ -.,\'":]');
+  let vDateFormatArray = [];
 
   for (let i = 0; i < pFormatStr.length; i++) {
     vCurrChar = pFormatStr.charAt(i);
@@ -255,6 +257,8 @@ export const parseDateFormatStr = function (pFormatStr) {
     }
 
   }
+
+  console.log(pFormatStr, vDateFormatArray);
   return vDateFormatArray;
 };
 

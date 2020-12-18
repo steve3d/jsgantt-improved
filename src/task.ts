@@ -2,6 +2,27 @@ import { formatDateStr, parseDateStr } from './utils/date_utils';
 import { newNode } from './utils/draw_utils';
 import { hashKey, internalProperties, internalPropertiesLang, stripUnwanted } from './utils/general_utils';
 
+export interface TaskItemObject {
+  pID: number;
+  pName: string;
+  pStart: string | Date;
+  pEnd: string | Date;
+  pPlanStart: string | Date;
+  pPlanEnd: string | Date;
+  pClass?: string;
+  pLink?: string;
+  pMile?: boolean;
+  pRes?: string;
+  pComp?: number;
+  pGroup?: boolean;
+  pParent?: number;
+  pOpen?: boolean;
+  pDepend?: string;
+  pCaption?: string;
+  pCost?: number;
+  pNotes?: string;
+}
+
 declare let g: any;
 
 // function to open window to display task link
@@ -258,7 +279,7 @@ export class TaskItem {
     if (this.vComp) return (100 - this.vComp) + '%'; else if (this.vCompVal) return (100 - this.vCompVal) + '%'; else return '';
   };
 
-  getDuration(pFormat: string, pLang) {
+  getDuration(pFormat: string, pLang): string {
     if (this.vMile) {
       this.vDuration = '-';
     } else if (!this.vEnd && !this.vStart && this.vPlanStart && this.vPlanEnd) {

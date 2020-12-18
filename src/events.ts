@@ -99,20 +99,6 @@ export const show = function (pID, pTop, ganttObj) {
 };
 
 
-export const mouseOver = function (pObj1, pObj2) {
-  if (this.getUseRowHlt()) {
-    pObj1.className += ' gitemhighlight';
-    pObj2.className += ' gitemhighlight';
-  }
-};
-
-export const mouseOut = function (pObj1, pObj2) {
-  if (this.getUseRowHlt()) {
-    pObj1.className = pObj1.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, '');
-    pObj2.className = pObj2.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, '');
-  }
-};
-
 export const showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTimer) {
   let vTtDivId = pGanttChartObj.getDivId() + 'JSGanttToolTip';
   let vMaxW = 500;
@@ -178,9 +164,6 @@ export const showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTime
   }
 };
 
-
-
-
 export const addListener = function (eventName, handler, control) {
   // Check if control is a string
   if (control === String(control)) control = findObj(control);
@@ -194,20 +177,6 @@ export const addListener = function (eventName, handler, control) {
     return control.attachEvent('on' + eventName, handler);
   }
   else {
-    return false;
-  }
-};
-
-export const removeListener = function (eventName, handler, control) {
-  // Check if control is a string
-  if (control === String(control)) control = findObj(control);
-  if (control.removeEventListener) {
-    //Standard W3C
-    return control.removeEventListener(eventName, handler, false);
-  } else if (control.detachEvent) {
-    //IExplore
-    return control.attachEvent('on' + eventName, handler);
-  } else {
     return false;
   }
 };

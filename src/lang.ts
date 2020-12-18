@@ -75,7 +75,7 @@ export interface GanttLanguage {
   tooltipLoading: string;
 }
 
-const en: GanttLanguage = {
+export const en: GanttLanguage = {
   format: 'Format',
   hour: 'Hour',
   day: 'Day',
@@ -152,7 +152,7 @@ const en: GanttLanguage = {
   tooltipLoading: 'Loading...'
 };
 
-const cn: GanttLanguage = {
+export const cn: GanttLanguage = {
   january: '一月',
   february: '二月',
   march: '三月',
@@ -229,4 +229,4 @@ const cn: GanttLanguage = {
   tooltipLoading: '加载中'
 };
 
-export const lang: Record<string, GanttLanguage> = {en, cn};
+export const languages = {en: en, cn: cn}

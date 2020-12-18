@@ -1,8 +1,10 @@
 /* Sample CSS for jsGanttImproved v1.8.0 */
 
+.gchartcontainer {
+  font-size: 13px;
+}
+
 div.gantt {
-  font-family: tahoma, arial, verdana, Sans-serif;
-  font-size: 10px;
   color: #656565;
 }
 
@@ -16,7 +18,6 @@ div.gantt {
 
 /* cell defaults */
 .headweekends div {
-  font-size: 8px;
   width: 100% !important;
   margin: 0;
 }
@@ -27,8 +28,7 @@ div.gantt {
 .gtaskcell,
 .gtaskcellcurrent,
 .gtaskcellwkend {
-  height: 19px;
-  font-size: 12px;
+  height: 20px;
   border: #efefef 1px solid;
   text-align: center;
   cursor: default
@@ -56,7 +56,6 @@ div.gantt {
 .gminorheading {
   background-color: #ffffff;
   font-weight: bold;
-  font-size: 9px;
   white-space: nowrap;
 }
 
@@ -65,7 +64,6 @@ div.gantt {
 .gminorheadingwkend {
   background-color: #f7f7f7;
   font-weight: bold;
-  font-size: 9px;
   white-space: nowrap;
 }
 
@@ -99,7 +97,7 @@ td.gspanning {
 .gplanenddate,
 .gcost,
 .genddate {
-  height: 18px;
+  height: 20px;
   white-space: nowrap;
   border: #efefef 1px solid;
 }
@@ -125,7 +123,7 @@ td.gspanning {
   top: 0px;
   opacity: 0.3;
   background: white;
-  z-index: 10000;
+  z-index: 2;
   border: 1px solid black;
 }
 
@@ -142,21 +140,16 @@ td.gspanning {
   min-width: 105px;
   width: 105px;
   max-width: 105px;
-  font-size: 10px;
 }
 
 .gtaskheading {
   text-align: center;
 }
 
-.gtaskname div,
-/* needed for IE8 */
-
 .gtaskname {
   min-width: 170px;
   max-width: 170px;
   width: 170px;
-  font-size: 9px;
   border-left: none;
 }
 
@@ -175,8 +168,6 @@ td.gspanning {
   text-align: left;
   white-space: nowrap;
   min-width: 170px;
-  max-width: 170px;
-  width: 170px;
 }
 
 .gformlabel {
@@ -199,7 +190,6 @@ span.gfoldercollapse {
   color: #000000;
   cursor: pointer;
   font-weight: bold;
-  font-size: 12px;
   font-family: Courier, "Courier New", monospace;
 }
 
@@ -252,7 +242,6 @@ span.gfoldercollapse {
 .ggroupcaption,
 .gcaption {
   font-weight: normal;
-  font-size: 9px;
   text-align: left;
   white-space: nowrap;
   top: 1px;
@@ -285,7 +274,6 @@ span.gfoldercollapse {
 /* Milestones */
 
 .gmilestone {
-  font-size: 14px;
   position: absolute;
   top: -2px;
 }
@@ -502,12 +490,10 @@ div.gtaskbarcontainer {
 .JSGanttToolTip {
   position: absolute;
   display: block;
-  z-index: 10000;
+  z-index: 3;
 }
 
 .JSGanttToolTipcont {
-  font-family: tahoma, arial, verdana;
-  font-size: 10px;
   display: block;
   background: #ffffff;
   color: #656565
@@ -524,7 +510,6 @@ div.gtaskbarcontainer {
 
 .gTtTitle {
   display: block;
-  font-size: 12px;
   font-weight: bold;
   color: #404040;
   margin-left: 4px;
@@ -532,7 +517,6 @@ div.gtaskbarcontainer {
 }
 
 .gTaskLabel {
-  font-size: 11px;
   font-weight: bold;
   color: #656565;
   margin-left: 4px;
@@ -542,13 +526,11 @@ div.gtaskbarcontainer {
   position: absolute;
   left: 90px;
   padding-top: 1px;
-  font-size: 10px;
   font-weight: normal;
   color: #656565;
 }
 
 .gTaskNotes {
-  font-size: 11px;
   font-weight: normal;
   color: #323232;
   padding: 0 15px;
@@ -773,7 +755,6 @@ td.gspanning div {
   width: 70px;
   max-width: 70px;
   min-width: 70px;
-  font-size: 10px;
 }
 
 @media print {
