@@ -23,6 +23,7 @@ export interface TaskItemObject {
   pCost?: number;
   pNotes?: string;
   pSortIdx?: number;
+  pUserData?: any;
 }
 
 // function to open window to display task link
@@ -35,6 +36,7 @@ export function taskLink (pRef, pWidth, pHeight) {
 }
 
 export function sortTasks (pList, pID, pIdx) {
+  console.log('sorting', pList, pID, pIdx);
   if (pList.length < 2) {
     return pIdx;
   }
@@ -99,6 +101,7 @@ export class TaskItem {
   vListChildRow: HTMLElement;
   vChildRow: HTMLElement;
   vGroupSpan: HTMLSpanElement;
+  vUserData: any;
 
   constructor(public vID: number,
               public vName: string,
@@ -369,7 +372,8 @@ export class TaskItem {
       pComp: this.vComp,
       pCost: this.vCost,
       pGroup: this.vGroup,
-      pDataObjec: this.vDataObject
+      pDataObject: this.vDataObject,
+      pUserData: this.vUserData
     };
   }
 }
@@ -577,13 +581,13 @@ export function processRows (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug =
     pList[pRow].vCompVal = Math.ceil(vCompSum / vWeight);
   }
 
-  if (pID == 0 && pUseSort == 1) {
+  if (!pID && pUseSort) {
     let bd;
     if (vDebug) {
       bd = new Date();
       console.info('before afterTasks', bd);
     }
-    sortTasks(pList, 0, 0);
+    // sortTasks(pList, 0, 0);
     if (vDebug) {
       const ad = new Date();
       console.info('after afterTasks', ad, (ad.getTime() - bd.getTime()));
@@ -602,7 +606,7 @@ export function processRows (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebug =
           bd = new Date();
           console.info('before sortTasks', bd);
         }
-        sortTasks(pList, pList[i].vID, pList[i].vSortIdx + 1);
+        // sortTasks(pList, pList[i].vID, pList[i].vSortIdx + 1);
         if (vDebug) {
           const ad = new Date();
           console.info('after sortTasks', ad, (ad.getTime() - bd.getTime()));

@@ -28,6 +28,7 @@
 	Copyright (c) 2009, Shlomy Gantz BlueBrick Inc.
 */
 
+export { ChartOptions } from './chart-options';
 export { GanttChart } from './chart';
 export {
 	showToolTip, addTooltipListeners
@@ -37,5 +38,5 @@ export {
 	stripIds, stripUnwanted, delayedHide, getOffset,
 	getScrollPositions, benchMark, getZoomFactor, hideToolTip, fadeToolTip, criticalPath, updateFlyingObj, moveToolTip,
 } from "./utils/general_utils";
-export { taskLink, sortTasks, TaskItem, processRows } from './task';
+export { taskLink, sortTasks, TaskItem, TaskItemObject, processRows } from './task';
 export { getMinDate, getMaxDate, parseDateStr, formatDateStr, parseDateFormatStr, getIsoWeek } from "./utils/date_utils";

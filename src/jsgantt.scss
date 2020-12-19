@@ -4,22 +4,16 @@
   font-size: 13px;
 }
 
-/*
-.gchartformat-day .gmainright .footerdays .gminorheading {
-  width: 18px;
+@for $i from 1 through 30 {
+  .gtaskname-level-#{$i} {
+    padding-left: $i * 1rem;
+  }
 }
 
-.gchartformat-week .gmainright .footerdays .gminorheading {
-  width: 18px;
-}
 
-.gchartformat-month .gmainright .footerdays .gminorheading {
-  width: 18px;
+.gtaskname-milestone {
+  font-style: italic;
 }
-
-.gchartformat-quarter .gmainright .footerdays .gminorheading {
-  width: 18px;
-} */
 
 div.gantt {
   color: #656565;
@@ -54,9 +48,10 @@ div.gantt {
 
 .gtasklist {
   height: 19px;
-  min-width: 5px;
-  max-width: 5px;
-  width: 5px;
+  min-width: 19px;
+  max-width: 19px;
+  width: 19px;
+  text-align: center;
   border: #efefef 1px solid;
   border-right: none;
 }
@@ -207,8 +202,6 @@ span.gselected {
 span.gfoldercollapse {
   color: #000000;
   cursor: pointer;
-  font-weight: bold;
-  font-family: Courier, "Courier New", monospace;
 }
 
 .gtasktableh,

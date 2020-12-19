@@ -70,8 +70,8 @@ export class GanttChart {
         6: true
     };
 
-    vEventClickCollapse = null;
-    vEventClickRow = null;
+    vEventClickCollapse: (e: TaskItem) => void;
+    vEventClickRow: (e: TaskItem) => void;
     vEvents: Record<string, (e?) => void>;
     vEventsChange: Record<string, (e?) => void>;
     vResources: string[];
@@ -790,7 +790,9 @@ export class GanttChart {
             object// public vDataObject?: any
         );
 
+
         item.vSortIdx = object.pSortIdx ?? 0;
+        item.vUserData = object.pUserData;
 
         this.AddTaskItem(item);
     };
@@ -1186,7 +1188,7 @@ export class GanttChart {
 
             if (vFormatArr.includes('quarter'))
                 newNode(vTmpDiv, 'span', this.vDivId + 'formatquarter' + pPos, 'gformlabel' + ((this.vFormat == 'quarter') ? ' gselected' : ''), this.vLangs[this.vLang]['quarter'])
-                    .addEventListener('click', () => this.setFormat('month'));
+                    .addEventListener('click', () => this.setFormat('quarter'));
 
         } else {
             newNode(vOutput, 'div', null, 'gselector');
@@ -1246,14 +1248,17 @@ export class GanttChart {
                 if (!this.vTaskList[i].vVisible) vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
                 else vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor);
                 this.vTaskList[i].vListChildRow = vTmpRow;
-                newNode(vTmpRow, 'td', null, 'gtasklist', '\u00A0');
+                const vTaskHeaderCell = newNode(vTmpRow, 'td', null, 'gtasklist');
                 const editableClass = this.vEditable ? 'gtaskname gtaskeditable' : 'gtaskname';
                 vTmpCell = newNode(vTmpRow, 'td', null, editableClass);
+                vTmpCell.classList.add(`gtaskname-level-${this.vTaskList[i].vLevel}`);
+                if(this.vTaskList[i].vMile) vTmpCell.classList.add('gtaskname-milestone');
 
                 let vCellContents = '';
-                for (let j = 1; j < this.vTaskList[i].vLevel; j++) {
-                    vCellContents += '\u00A0\u00A0\u00A0\u00A0';
-                }
+                // for (let j = 1; j < this.vTaskList[i].vLevel; j++) {
+                //     console.log(this.vTaskList[i].vName, this.vTaskList[i].vLevel);
+                //     vCellContents += '\u00A0\u00A0\u00A0\u00A0';
+                // }
 
                 const task = this.vTaskList[i];
                 const vEventClickRow = this.vEventClickRow;
@@ -1272,7 +1277,7 @@ export class GanttChart {
 
                 if (this.vTaskList[i].vGroup == 1) {
                     let vTmpDiv = newNode(vTmpCell, 'div', null, null, vCellContents);
-                    let vTmpSpan = newNode(vTmpDiv, 'span', this.vDivId + 'group_' + vID, 'gfoldercollapse', (this.vTaskList[i].vOpen) ? '-' : '+');
+                    let vTmpSpan = newNode(vTaskHeaderCell, 'span', this.vDivId + 'group_' + vID, 'gfoldercollapse', (this.vTaskList[i].vOpen) ? '-' : '+');
                     this.vTaskList[i].vGroupSpan = vTmpSpan;
                     vTmpSpan.addEventListener('click', () => {
                         this.folder(vID);
@@ -1280,7 +1285,8 @@ export class GanttChart {
                     });
 
                     const divTask = document.createElement('span');
-                    divTask.innerHTML = '\u00A0' + this.vTaskList[i].vName;
+                    divTask.innerHTML = this.vTaskList[i].vName;
+
                     vTmpDiv.appendChild(divTask);
                     // const text = makeInput(this.vTaskList[i].vName, this.vEditable, 'text');
                     // vTmpDiv.appendChild(document.createNode(text));
@@ -1288,7 +1294,7 @@ export class GanttChart {
                     addListenerInputCell(vTmpCell, this.vEventsChange, callback, this.vTaskList, i, 'taskname', this.Draw.bind(this));
                     addListenerClickCell(vTmpDiv, this.vEvents, this.vTaskList[i], 'taskname');
                 } else {
-                    vCellContents += '\u00A0\u00A0\u00A0\u00A0';
+                    // vCellContents += '\u00A0\u00A0\u00A0\u00A0';
                     const text = makeInput(this.vTaskList[i].vName, this.vEditable, 'text');
                     let vTmpDiv = newNode(vTmpCell, 'div', null, null, vCellContents + text);
                     const callback = (task, e) => task.vName = e.target.value;
