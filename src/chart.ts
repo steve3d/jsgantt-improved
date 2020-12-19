@@ -847,7 +847,7 @@ export class GanttChart {
 
         this.getLines().appendChild(vTmpDiv);
 
-        if (this.vEvents.onLineDraw && typeof this.vEvents.onLineDraw === 'function') {
+        if (this.vEvents?.onLineDraw && typeof this.vEvents.onLineDraw === 'function') {
             this.vEvents.onLineDraw(vTmpDiv);
         }
 
@@ -1197,10 +1197,7 @@ export class GanttChart {
 
     clearDependencies() {
         let parent = this.getLines();
-        if (
-            this.vEventsChange.line &&
-            typeof this.vEventsChange.line === 'function'
-        ) {
+        if (this.vEventsChange?.line && typeof this.vEventsChange.line === 'function') {
             this.removeListener('click', this.vEventsChange.line, parent);
             this.addListener('click', this.vEventsChange.line, parent);
         }
@@ -1771,7 +1768,7 @@ export class GanttChart {
         let vColWidth = 0;
         let bd;
 
-        if (this.vEvents && this.vEvents.beforeDraw) {
+        if (this.vEvents?.beforeDraw) {
             this.vEvents.beforeDraw();
         }
 
@@ -1853,7 +1850,7 @@ export class GanttChart {
 
         newNode(vTmpDiv, 'div', null, 'ggridfooter');
         const vTmpDiv2 = newNode(this.getChartBody(), 'div', this.vDivId + 'Lines', 'glinediv');
-        if (this.vEvents.onLineContainerHover && typeof this.vEvents.onLineContainerHover === 'function') {
+        if (this.vEvents?.onLineContainerHover && typeof this.vEvents.onLineContainerHover === 'function') {
             vTmpDiv2.addEventListener('mouseover', this.vEvents.onLineContainerHover);
             vTmpDiv2.addEventListener('mouseout', this.vEvents.onLineContainerHover);
         }
@@ -1906,14 +1903,14 @@ export class GanttChart {
             bdd = new Date();
             console.info('before DrawDependencies', bdd);
         }
-        if (this.vEvents && typeof this.vEvents.beforeLineDraw === 'function') {
+        if (this.vEvents?.beforeLineDraw && typeof this.vEvents.beforeLineDraw === 'function') {
             this.vEvents.beforeLineDraw();
         }
         this.DrawDependencies(this.vDebug);
         addListenerDependencies(this.vLineOptions);
 
         // EVENTS
-        if (this.vEvents && typeof this.vEvents.afterLineDraw === 'function') {
+        if (this.vEvents?.afterLineDraw && typeof this.vEvents.afterLineDraw === 'function') {
             this.vEvents.afterLineDraw();
         }
         if (this.vDebug) {
@@ -1938,7 +1935,7 @@ export class GanttChart {
             return getOffset(vMinDate, date, vColWidth, this.vFormat, this.vShowWeekends);
         };
 
-        if (this.vEvents && this.vEvents.afterDraw) {
+        if (this.vEvents?.afterDraw && this.vEvents.afterDraw) {
             this.vEvents.afterDraw();
         }
     }

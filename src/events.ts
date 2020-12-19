@@ -148,17 +148,19 @@ export function updateGridHeaderWidth(pGanttChart) {
 }
 
 export function addListenerClickCell(vTmpCell: HTMLElement, vEvents, task, column) {
-    vTmpCell.addEventListener('click', e => {
-        if ((e.target as HTMLElement)?.classList.contains('gfoldercollapse') === false &&
-            vEvents[column] && typeof vEvents[column] === 'function') {
-            vEvents[column](task, e, vTmpCell, column);
-        }
-    })
+    if(vEvents?.hasOwnProperty(column)) {
+        vTmpCell.addEventListener('click', e => {
+            if ((e.target as HTMLElement)?.classList.contains('gfoldercollapse') === false &&
+                vEvents[column] && typeof vEvents[column] === 'function') {
+                vEvents[column](task, e, vTmpCell, column);
+            }
+        })
+    }
 }
 
 export function addListenerInputCell(vTmpCell, vEventsChange, callback, tasks, index, column, draw = null, event = 'blur') {
     const task = tasks[index];
-    if (vTmpCell.children[0] && vTmpCell.children[0].children && vTmpCell.children[0].children[0]) {
+    if (vEventsChange?.hasOwnProperty(event) && vTmpCell.children[0] && vTmpCell.children[0].children && vTmpCell.children[0].children[0]) {
         const tagName = vTmpCell.children[0].children[0].tagName;
         const selectInputOrButton = tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'BUTTON';
         if (selectInputOrButton) {
