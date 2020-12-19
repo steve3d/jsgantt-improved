@@ -28,11 +28,6 @@ export function findObj(theObj, theDoc = null) {
     return foundObj;
 }
 
-export function changeFormat(pFormat, ganttObj) {
-    if (ganttObj) ganttObj.setFormat(pFormat);
-    else alert('Chart undefined');
-}
-
 export function stripIds(pNode) {
     for (let i = 0; i < pNode.childNodes.length; i++) {
         if ('removeAttribute' in pNode.childNodes[i]) pNode.childNodes[i].removeAttribute('id');
@@ -178,13 +173,6 @@ export function getOffset(pStartDate, pEndDate, pColWidth, pFormat, pShowWeekend
     return vTaskRightPx;
 }
 
-export function isIE() {
-    if (typeof document.all != 'undefined') {
-        if ('pageXOffset' in window) return false;	// give IE9 and above the benefit of the doubt!
-        else return true;
-    } else return false;
-}
-
 export function hideToolTip(pGanttChartObj, pTool, pTimer) {
     if (pGanttChartObj.getUseFade()) {
         clearInterval(pTool.fadeInterval);
@@ -246,7 +234,7 @@ export function hashString(key) {
 }
 
 export function hashKey(key) {
-    return this.hashString(key);
+    return hashString(key);
 }
 
 export function criticalPath(tasks) {

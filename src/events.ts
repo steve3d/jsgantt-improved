@@ -1,108 +1,12 @@
 import {
-    changeFormat,
     delayedHide,
     fadeToolTip,
     findObj,
     getScrollbarWidth,
-    isIE,
     isParentElementOrSelf,
     stripIds,
     updateFlyingObj
 } from "./utils/general_utils";
-
-// Function to open/close and hide/show children of specified task
-export function folder(pID, ganttObj) {
-    let vList = ganttObj.getList();
-
-    ganttObj.clearDependencies(); // clear these first so slow rendering doesn't look odd
-
-    for (let i = 0; i < vList.length; i++) {
-        if (vList[i].vID == pID) {
-            if (vList[i].vOpen) {
-                vList[i].vOpen = false;
-                hide(pID, ganttObj);
-
-                if (isIE())
-                    vList[i].vGroupSpan.innerText = '+';
-                else
-                    vList[i].vGroupSpan.textContent = '+';
-            } else {
-                vList[i].vOpen = true;
-                show(pID, 1, ganttObj);
-
-                if (isIE())
-                    vList[i].vGroupSpan.innerText = '-';
-                else
-                    vList[i].vGroupSpan.textContent = '-';
-            }
-        }
-    }
-    let bd;
-    if (ganttObj.vDebug) {
-        bd = new Date();
-        console.info('after drawDependency', bd);
-    }
-    ganttObj.DrawDependencies(ganttObj.vDebug);
-    if (ganttObj.vDebug) {
-        const ad = new Date();
-        console.info('after drawDependency', ad, (ad.getTime() - bd.getTime()));
-    }
-}
-
-export function hide(pID, ganttObj) {
-    let vList = ganttObj.getList();
-    let vID = 0;
-
-    for (let i = 0; i < vList.length; i++) {
-        if (vList[i].vParent == pID) {
-            vID = vList[i].vID;
-            // it's unlikely but if the task list has been updated since
-            // the chart was drawn some of the rows may not exist
-            if (vList[i].vListChildRow) vList[i].vListChildRow.style.display = 'none';
-            if (vList[i].vChildRow) vList[i].vChildRow.style.display = 'none';
-            vList[i].vVisible = false;
-            if (vList[i].vGroup) hide(vID, ganttObj);
-        }
-    }
-}
-
-// Function to show children of specified task
-export function show(pID, pTop, ganttObj) {
-    let vList = ganttObj.getList();
-    let vID = 0;
-    let vState = '';
-
-    for (let i = 0; i < vList.length; i++) {
-        if (vList[i].vParent == pID) {
-            if (!vList[i].vParItem) {
-                console.error(`Cant find parent on who event (maybe problems with Task ID and Parent Id mixes?)`);
-            }
-            if (vList[i].vParItem.vGroupSpan) {
-                if (isIE()) vState = vList[i].vParItem.vGroupSpan.innerText;
-                else vState = vList[i].vParItem.vGroupSpan.textContent;
-            }
-            i = vList.length;
-        }
-    }
-
-    for (let i = 0; i < vList.length; i++) {
-        if (vList[i].vParent == pID) {
-            let vChgState = false;
-            vID = vList[i].vID;
-
-            if (pTop == 1 && vState == '+') vChgState = true;
-            else if (vState == '-') vChgState = true;
-            else if (vList[i].vParItem && vList[i].vParItem.vGroup == 2) vList[i].vVisible = true;
-
-            if (vChgState) {
-                if (vList[i].vListChildRow) vList[i].vListChildRow.style.display = '';
-                if (vList[i].vChildRow) vList[i].vChildRow.style.display = '';
-                vList[i].vVisible = true;
-            }
-            if (vList[i].vGroup) show(vID, 0, ganttObj);
-        }
-    }
-}
 
 export function showToolTip(pGanttChartObj, e, pContents, pWidth, pTimer) {
     let vTtDivId = pGanttChartObj.getDivId() + 'JSGanttToolTip';
@@ -156,7 +60,7 @@ export function showToolTip(pGanttChartObj, e, pContents, pWidth, pTimer) {
             // Rather than follow the mouse just have it stay put
             updateFlyingObj(e, pGanttChartObj, pTimer);
             pGanttChartObj.vTool.style.width = (pWidth) ? pWidth + 'px' : 'auto';
-            if (!pWidth && isIE()) {
+            if (!pWidth) {
                 pGanttChartObj.vTool.style.width = pGanttChartObj.vTool.offsetWidth;
             }
             if (pGanttChartObj.vTool.offsetWidth > vMaxW) {
@@ -173,21 +77,6 @@ export function showToolTip(pGanttChartObj, e, pContents, pWidth, pTimer) {
             pGanttChartObj.vTool.style.opacity = vMaxAlpha * 0.01;
             pGanttChartObj.vTool.style.filter = 'alpha(opacity=' + vMaxAlpha + ')';
         }
-    }
-}
-
-export function addListener(eventName, handler, control) {
-    // Check if control is a string
-    if (control === String(control)) control = findObj(control);
-
-    if (control.addEventListener) //Standard W3C
-    {
-        return control.addEventListener(eventName, handler, false);
-    } else if (control.attachEvent) //IExplore
-    {
-        return control.attachEvent('on' + eventName, handler);
-    } else {
-        return false;
     }
 }
 
@@ -212,10 +101,10 @@ export function syncScroll(elements, attrName) {
     }
 }
 
-export function addTooltipListeners(pGanttChart, pObj1, pObj2, callback) {
+export function addTooltipListeners(pGanttChart, pObj1: HTMLElement, pObj2: HTMLElement, callback) {
     let isShowingTooltip = false;
 
-    addListener('mouseover', function (e) {
+    pObj1.addEventListener('mouseover', e => {
         if (isShowingTooltip || !callback) {
             showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
         } else if (callback) {
@@ -231,9 +120,9 @@ export function addTooltipListeners(pGanttChart, pObj1, pObj2, callback) {
                 });
             }
         }
-    }, pObj1);
+    });
 
-    addListener('mouseout', function (e) {
+    pObj1.addEventListener('mouseout', e => {
         const outTo = e.relatedTarget;
         if (isParentElementOrSelf(outTo, pObj1) || (pGanttChart.vTool && isParentElementOrSelf(outTo, pGanttChart.vTool))) {
             // not actually out
@@ -242,23 +131,9 @@ export function addTooltipListeners(pGanttChart, pObj1, pObj2, callback) {
         }
 
         delayedHide(pGanttChart, pGanttChart.vTool, pGanttChart.getTimer());
-    }, pObj1);
+    });
 }
 
-export function addThisRowListeners(pGanttChart, pObj1, pObj2) {
-    addListener('mouseover', function () {
-        pGanttChart.mouseOver(pObj1, pObj2);
-    }, pObj1);
-    addListener('mouseover', function () {
-        pGanttChart.mouseOver(pObj1, pObj2);
-    }, pObj2);
-    addListener('mouseout', function () {
-        pGanttChart.mouseOut(pObj1, pObj2);
-    }, pObj1);
-    addListener('mouseout', function () {
-        pGanttChart.mouseOut(pObj1, pObj2);
-    }, pObj2);
-}
 
 export function updateGridHeaderWidth(pGanttChart) {
     const head = pGanttChart.getChartHead();
@@ -272,35 +147,13 @@ export function updateGridHeaderWidth(pGanttChart) {
     }
 }
 
-export function addFolderListeners(pGanttChart, pObj, pID) {
-    addListener('click', function () {
-        folder(pID, pGanttChart);
-        updateGridHeaderWidth(pGanttChart);
-    }, pObj);
-}
-
-export function addFormatListeners(pGanttChart, pFormat, pObj) {
-    addListener('click', function () {
-        changeFormat(pFormat, pGanttChart);
-    }, pObj);
-}
-
-export function addScrollListeners(pGanttChart) {
-    addListener('resize', function (e) {
-        pGanttChart.getChartHead().scrollLeft = pGanttChart.getChartBody().scrollLeft;
-    }, window);
-    addListener('resize', function (e) {
-        pGanttChart.getListBody().scrollTop = pGanttChart.getChartBody().scrollTop;
-    }, window);
-}
-
-export function addListenerClickCell(vTmpCell, vEvents, task, column) {
-    addListener('click', function (e) {
-        if (e.target.classList.contains('gfoldercollapse') === false &&
+export function addListenerClickCell(vTmpCell: HTMLElement, vEvents, task, column) {
+    vTmpCell.addEventListener('click', e => {
+        if ((e.target as HTMLElement)?.classList.contains('gfoldercollapse') === false &&
             vEvents[column] && typeof vEvents[column] === 'function') {
             vEvents[column](task, e, vTmpCell, column);
         }
-    }, vTmpCell);
+    })
 }
 
 export function addListenerInputCell(vTmpCell, vEventsChange, callback, tasks, index, column, draw = null, event = 'blur') {
@@ -309,7 +162,7 @@ export function addListenerInputCell(vTmpCell, vEventsChange, callback, tasks, i
         const tagName = vTmpCell.children[0].children[0].tagName;
         const selectInputOrButton = tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'BUTTON';
         if (selectInputOrButton) {
-            addListener(event, function (e) {
+            vTmpCell.children[0].children[0].addEventListener(event, e => {
                 if (callback) {
                     callback(task, e);
                 }
@@ -323,7 +176,7 @@ export function addListenerInputCell(vTmpCell, vEventsChange, callback, tasks, i
                 } else {
                     draw();
                 }
-            }, vTmpCell.children[0].children[0]);
+            });
         }
     }
 }

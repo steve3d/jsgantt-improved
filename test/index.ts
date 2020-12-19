@@ -1,5 +1,5 @@
 
-import * as JSGantt from '../index';
+import * as JSGantt from '../src/jsgantt';
 import { expect } from 'chai';
 import { browser, by, element } from 'protractor';
 

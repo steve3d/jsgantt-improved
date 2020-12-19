@@ -1,14 +1,9 @@
 import { ChartOptions } from './chart-options';
 import { COLUMN_ORDER, draw_bottom, draw_header, draw_task_headings } from './draw_columns';
 import {
-    addFolderListeners,
-    addFormatListeners,
-    addListener,
     addListenerClickCell,
     addListenerDependencies,
     addListenerInputCell,
-    addScrollListeners,
-    addThisRowListeners,
     addTooltipListeners,
     syncScroll,
     updateGridHeaderWidth
@@ -30,7 +25,8 @@ import {
     getOffset,
     getScrollbarWidth,
     internalProperties,
-    internalPropertiesLang
+    internalPropertiesLang,
+    makeRequest
 } from './utils/general_utils';
 
 export class GanttChart {
@@ -63,7 +59,7 @@ export class GanttChart {
     vShowTaskInfoLink = false;
 
     vShowDeps = true;
-    vTotalHeight: number;
+    vTotalHeight: string;
     vWorkingDays: Record<number, boolean> = {
         0: true, // sunday
         1: true,
@@ -155,12 +151,23 @@ export class GanttChart {
 
     chartRowDateToX: any;
 
+    private taskIdMap: Map<number, TaskItem> = new Map<number, TaskItem>();
     private currentLang: string;
-    private scrollPos: {x: number, y: number};
+    private scrollPos: { x: number, y: number };
 
     constructor(public vDiv: HTMLElement, public vFormat: 'hour' | 'day' | 'week' | 'month' | 'quarter') {
         this.vDivId = vDiv?.id ?? null;
         this.vLang = this.vLangs.hasOwnProperty(navigator.language) ? navigator.language : 'en';
+
+        window.addEventListener('resize', (e) => {
+            if(this.vChartHead && this.vChartBody) {
+                this.vChartHead.scrollLeft = this.vChartBody.scrollLeft;
+            }
+
+            if(this.vListBody && this.vChartBody) {
+                this.vListBody.scrollTop = this.vChartBody.scrollTop;
+            }
+        });
     }
 
     get vLang(): string {
@@ -775,10 +782,11 @@ export class GanttChart {
     };
 
     AddTaskItem(value: TaskItem) {
-        let vExists = this.vTaskList.find(t => t.vID === value.vID);
 
-        if (!vExists) {
+        if(!this.taskIdMap.has(value.vID)) {
+            value.vGantt = this;
             this.vTaskList.push(value);
+            this.taskIdMap[value.vID] = value;
             this.vProcessNeeded = true;
         }
     };
@@ -1185,20 +1193,28 @@ export class GanttChart {
         if (vDisplay) {
             let vTmpDiv = newNode(vOutput, 'div', null, 'gselector', this.vLangs[this.vLang]['format'] + ':');
 
-            if (this.vFormatArr.join().toLowerCase().indexOf('hour') != -1)
-                addFormatListeners(this, 'hour', newNode(vTmpDiv, 'span', this.vDivId + 'formathour' + pPos, 'gformlabel' + ((this.vFormat == 'hour') ? ' gselected' : ''), this.vLangs[this.vLang]['hour']));
+            const vFormatArr = this.vFormatArr.map(f => f.toLowerCase());
 
-            if (this.vFormatArr.join().toLowerCase().indexOf('day') != -1)
-                addFormatListeners(this, 'day', newNode(vTmpDiv, 'span', this.vDivId + 'formatday' + pPos, 'gformlabel' + ((this.vFormat == 'day') ? ' gselected' : ''), this.vLangs[this.vLang]['day']));
+            if (vFormatArr.includes('hour'))
+                newNode(vTmpDiv, 'span', this.vDivId + 'formathour' + pPos, 'gformlabel' + ((this.vFormat == 'hour') ? ' gselected' : ''), this.vLangs[this.vLang]['hour'])
+                    .addEventListener('click', () => this.setFormat('hour'));
 
-            if (this.vFormatArr.join().toLowerCase().indexOf('week') != -1)
-                addFormatListeners(this, 'week', newNode(vTmpDiv, 'span', this.vDivId + 'formatweek' + pPos, 'gformlabel' + ((this.vFormat == 'week') ? ' gselected' : ''), this.vLangs[this.vLang]['week']));
+            if (vFormatArr.includes('day'))
+                newNode(vTmpDiv, 'span', this.vDivId + 'formatday' + pPos, 'gformlabel' + ((this.vFormat == 'day') ? ' gselected' : ''), this.vLangs[this.vLang]['day'])
+                    .addEventListener('click', () => this.setFormat('day'));
 
-            if (this.vFormatArr.join().toLowerCase().indexOf('month') != -1)
-                addFormatListeners(this, 'month', newNode(vTmpDiv, 'span', this.vDivId + 'formatmonth' + pPos, 'gformlabel' + ((this.vFormat == 'month') ? ' gselected' : ''), this.vLangs[this.vLang]['month']));
+            if (vFormatArr.includes('week'))
+                newNode(vTmpDiv, 'span', this.vDivId + 'formatweek' + pPos, 'gformlabel' + ((this.vFormat == 'week') ? ' gselected' : ''), this.vLangs[this.vLang]['week'])
+                    .addEventListener('click', () => this.setFormat('week'));
 
-            if (this.vFormatArr.join().toLowerCase().indexOf('quarter') != -1)
-                addFormatListeners(this, 'quarter', newNode(vTmpDiv, 'span', this.vDivId + 'formatquarter' + pPos, 'gformlabel' + ((this.vFormat == 'quarter') ? ' gselected' : ''), this.vLangs[this.vLang]['quarter']));
+            if (vFormatArr.includes('month'))
+                newNode(vTmpDiv, 'span', this.vDivId + 'formatmonth' + pPos, 'gformlabel' + ((this.vFormat == 'month') ? ' gselected' : ''), this.vLangs[this.vLang]['month'])
+                    .addEventListener('click', () => this.setFormat('month'));
+
+            if (vFormatArr.includes('quarter'))
+                newNode(vTmpDiv, 'span', this.vDivId + 'formatquarter' + pPos, 'gformlabel' + ((this.vFormat == 'quarter') ? ' gselected' : ''), this.vLangs[this.vLang]['quarter'])
+                    .addEventListener('click', () => this.setFormat('month'));
+
         } else {
             newNode(vOutput, 'div', null, 'gselector');
         }
@@ -1255,7 +1271,7 @@ export class GanttChart {
             else vBGColor = 'glineitem';
 
             let vID = this.vTaskList[i].vID;
-            let vTmpRow, vTmpCell;
+            let vTmpRow: HTMLElement, vTmpCell: HTMLElement;
             if ((!(this.vTaskList[i].vParItem && this.vTaskList[i].vParItem.vGroup == 2)) || this.vTaskList[i].vGroup == 2) {
                 if (!this.vTaskList[i].vVisible) vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor, null, null, null, 'none');
                 else vTmpRow = newNode(vTmpContentTBody, 'tr', this.vDivId + 'child_' + vID, 'gname ' + vBGColor);
@@ -1272,8 +1288,8 @@ export class GanttChart {
                 const task = this.vTaskList[i];
                 const vEventClickRow = this.vEventClickRow;
                 const vEventClickCollapse = this.vEventClickCollapse;
-                addListener('click', function (e) {
-                    if (e.target.classList.contains('gfoldercollapse') === false) {
+                vTmpRow.addEventListener('click', e => {
+                    if ((e.target as HTMLElement).classList.contains('gfoldercollapse') === false) {
                         if (vEventClickRow && typeof vEventClickRow === "function") {
                             vEventClickRow(task);
                         }
@@ -1282,13 +1298,16 @@ export class GanttChart {
                             vEventClickCollapse(task);
                         }
                     }
-                }, vTmpRow);
+                })
 
                 if (this.vTaskList[i].vGroup == 1) {
                     let vTmpDiv = newNode(vTmpCell, 'div', null, null, vCellContents);
                     let vTmpSpan = newNode(vTmpDiv, 'span', this.vDivId + 'group_' + vID, 'gfoldercollapse', (this.vTaskList[i].vOpen) ? '-' : '+');
                     this.vTaskList[i].vGroupSpan = vTmpSpan;
-                    addFolderListeners(this, vTmpSpan, vID);
+                    vTmpSpan.addEventListener('click', () => {
+                        this.folder(vID);
+                        updateGridHeaderWidth(this);
+                    });
 
                     const divTask = document.createElement('span');
                     divTask.innerHTML = '\u00A0' + this.vTaskList[i].vName;
@@ -1571,7 +1590,7 @@ export class GanttChart {
             if (this.vTaskList[i].vMile && !vComb) {
                 let vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'gmileitem gmile' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
                 this.vTaskList[i].vChildRow = vTmpRow;
-                addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
+                this.addThisRowListeners(this.vTaskList[i].vListChildRow, vTmpRow);
 
                 const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellmile', null, vColWidth, null, null, null);
 
@@ -1605,7 +1624,7 @@ export class GanttChart {
 
                     const vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, ((this.vTaskList[i].vGroup == 2) ? 'glineitem gitem' : 'ggroupitem ggroup') + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
                     this.vTaskList[i].vChildRow = vTmpRow;
-                    addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
+                    this.addThisRowListeners(this.vTaskList[i].vListChildRow, vTmpRow);
 
                     const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellbar', null, vColWidth, null, null);
 
@@ -1642,7 +1661,7 @@ export class GanttChart {
                         // Draw Task Bar which has colored bar div
                         vTmpRow = newNode(vTmpTBody, 'tr', this.vDivId + 'childrow_' + vID, 'glineitem gitem' + this.vFormat, null, null, null, ((!this.vTaskList[i].vVisible) ? 'none' : null));
                         this.vTaskList[i].vChildRow = vTmpRow;
-                        addThisRowListeners(this, this.vTaskList[i].vListChildRow, vTmpRow);
+                        this.addThisRowListeners(this.vTaskList[i].vListChildRow, vTmpRow);
 
                         const vTmpCell = newNode(vTmpRow, 'td', null, 'gtaskcell gtaskcellcolorbar', null, taskCellWidth, null, null);
                         vTmpDivCell = vTmpDiv = newNode(vTmpCell, 'div', null, 'gtaskcelldiv', '\u00A0\u00A0');
@@ -1862,8 +1881,8 @@ export class GanttChart {
         newNode(vTmpDiv, 'div', null, 'ggridfooter');
         const vTmpDiv2 = newNode(this.getChartBody(), 'div', this.vDivId + 'Lines', 'glinediv');
         if (this.vEvents.onLineContainerHover && typeof this.vEvents.onLineContainerHover === 'function') {
-            addListener('mouseover', this.vEvents.onLineContainerHover, vTmpDiv2);
-            addListener('mouseout', this.vEvents.onLineContainerHover, vTmpDiv2);
+            vTmpDiv2.addEventListener('mouseover', this.vEvents.onLineContainerHover);
+            vTmpDiv2.addEventListener('mouseout', this.vEvents.onLineContainerHover);
         }
         vTmpDiv2.style.visibility = 'hidden';
         this.setLines(vTmpDiv2);
@@ -1876,7 +1895,7 @@ export class GanttChart {
 
 
         // LISTENERS: Now all the content exists, register scroll listeners
-        addScrollListeners(this);
+        // addScrollListeners(this);
 
         // SCROLL: now check if we are actually scrolling the pane
         if (this.vScrollTo) {
@@ -1949,5 +1968,520 @@ export class GanttChart {
         if (this.vEvents && this.vEvents.afterDraw) {
             this.vEvents.afterDraw();
         }
+    }
+
+    async parseJSON(pFile: string, redrawAfter = true) {
+        const jsonObj = await makeRequest(pFile, true, true);
+        let bd;
+        if (this.vDebug) {
+            bd = new Date();
+            console.info('before jsonparse', bd);
+        }
+        this.addJSONTask(jsonObj);
+        if (this.vDebug) {
+            const ad = new Date();
+            console.info('after addJSONTask', ad, (ad.getTime() - bd.getTime()));
+        }
+        if (redrawAfter) {
+            this.Draw();
+        }
+        return jsonObj;
+    }
+
+    parseJSONString(pStr: string) {
+        this.addJSONTask(JSON.parse(pStr));
+    }
+
+    addJSONTask(pJsonObj: any[]) {
+        pJsonObj?.forEach((obj: any) => {
+            let id;
+            let name;
+            let start;
+            let end;
+            let planstart;
+            let planend;
+            let itemClass;
+            let link = '';
+            let milestone: boolean = false;
+            let resourceName = '';
+            let completion;
+            let group = 0;
+            let parent;
+            let open;
+            let dependsOn = '';
+            let caption = '';
+            let notes = '';
+            let cost;
+            let duration = '';
+            let bartext = '';
+            const additionalObject = {};
+
+            Object.keys(obj)
+                .forEach(prop => {
+                    const value = obj[prop];
+                    switch (prop.toLowerCase()) {
+                        case 'pid':
+                        case 'id':
+                            id = value;
+                            break;
+                        case 'pname':
+                        case 'name':
+                            name = value;
+                            break;
+                        case 'pstart':
+                        case 'start':
+                            start = value;
+                            break;
+                        case 'pend':
+                        case 'end':
+                            end = value;
+                            break;
+                        case 'pplanstart':
+                        case 'planstart':
+                            planstart = value;
+                            break;
+                        case 'pplanend':
+                        case 'planend':
+                            planend = value;
+                            break;
+                        case 'pclass':
+                        case 'class':
+                            itemClass = value;
+                            break;
+                        case 'plink':
+                        case 'link':
+                            link = value;
+                            break;
+                        case 'pmile':
+                        case 'mile':
+                            milestone = value;
+                            break;
+                        case 'pres':
+                        case 'res':
+                            resourceName = value;
+                            break;
+                        case 'pcomp':
+                        case 'comp':
+                            completion = value;
+                            break;
+                        case 'pgroup':
+                        case 'group':
+                            group = value;
+                            break;
+                        case 'pparent':
+                        case 'parent':
+                            parent = value;
+                            break;
+                        case 'popen':
+                        case 'open':
+                            open = value;
+                            break;
+                        case 'pdepend':
+                        case 'depend':
+                            dependsOn = value;
+                            break;
+                        case 'pcaption':
+                        case 'caption':
+                            caption = value;
+                            break;
+                        case 'pnotes':
+                        case 'notes':
+                            notes = value;
+                            break;
+                        case 'pcost':
+                        case 'cost':
+                            cost = value;
+                            break;
+                        case 'duration':
+                        case 'pduration':
+                            duration = value;
+                            break;
+                        case 'bartext':
+                        case 'pbartext':
+                            bartext = value;
+                            break;
+                        default:
+                            additionalObject[prop.toLowerCase()] = value;
+                    }
+                });
+
+            //if (id != undefined && !isNaN(parseInt(id)) && isFinite(id) && name && start && end && itemClass && completion != undefined && !isNaN(parseFloat(completion)) && isFinite(completion) && !isNaN(parseInt(parent)) && isFinite(parent)) {
+            this.AddTaskItem(new TaskItem(id, name, start, end, itemClass, link,
+                milestone, resourceName, completion, group, parent, open, dependsOn,
+                caption, notes, this, cost, planstart, planend, duration, bartext,
+                additionalObject));
+            //}
+        });
+    }
+
+    parseXML(pFile) {
+        return makeRequest(pFile, false, false)
+            .then(xmlDoc => {
+                this.AddXMLTask(xmlDoc);
+            });
+    }
+
+    parseXMLString(pStr) {
+        let xmlDoc;
+        if (typeof (<any>window).DOMParser != 'undefined') {
+            xmlDoc = (new (<any>window).DOMParser()).parseFromString(pStr, 'text/xml');
+        } else if (typeof (<any>window).ActiveXObject != 'undefined' &&
+            new (<any>window).ActiveXObject('Microsoft.XMLDOM')) {
+            xmlDoc = new (<any>window).ActiveXObject('Microsoft.XMLDOM');
+            xmlDoc.async = 'false';
+            xmlDoc.loadXML(pStr);
+        }
+
+        this.AddXMLTask(xmlDoc);
+    }
+
+
+    private findXMLNode(pRoot, pNodeName) {
+        let vRetValue;
+
+        try {
+            vRetValue = pRoot.getElementsByTagName(pNodeName);
+        } catch (error) {
+        } // do nothing, we'll return undefined
+
+        return vRetValue;
+    }
+
+// pType can be 1=numeric, 2=String, all other values just return raw data
+    private getXMLNodeValue(pRoot, pNodeName, pType, pDefault) {
+        let vRetValue;
+
+        try {
+            vRetValue = pRoot.getElementsByTagName(pNodeName)[0].childNodes[0].nodeValue;
+        } catch (error) {
+            if (typeof pDefault != 'undefined') vRetValue = pDefault;
+        }
+
+        if (typeof vRetValue != 'undefined' && vRetValue != null) {
+            if (pType == 1) vRetValue *= 1;
+            else if (pType == 2) vRetValue = vRetValue.toString();
+        }
+        return vRetValue;
+    }
+
+    AddXMLTask(pXmlDoc) {
+        let project = '';
+        let Task;
+        let n = 0;
+        let m = 0;
+        let i = 0;
+        let j = 0;
+        let k = 0;
+        let maxPID = 0;
+        let ass = [];
+        let assRes = [];
+        let res = [];
+        let pars = [];
+
+        let projNode = this.findXMLNode(pXmlDoc, 'Project');
+        if (typeof projNode != 'undefined' && projNode.length > 0) {
+            project = projNode[0].getAttribute('xmlns');
+        }
+
+        if (project == 'http://schemas.microsoft.com/project') {
+            this.setDateInputFormat('yyyy-mm-dd');
+            Task = this.findXMLNode(pXmlDoc, 'Task');
+            if (typeof Task == 'undefined') n = 0;
+            else n = Task.length;
+
+            let resources = this.findXMLNode(pXmlDoc, 'Resource');
+            if (typeof resources == 'undefined') {
+                n = 0;
+                m = 0;
+            } else m = resources.length;
+
+            for (i = 0; i < m; i++) {
+                let resname = this.getXMLNodeValue(resources[i], 'Name', 2, '');
+                let uid = this.getXMLNodeValue(resources[i], 'UID', 1, -1);
+
+                if (resname.length > 0 && uid > 0) res[uid] = resname;
+            }
+
+            let assignments = this.findXMLNode(pXmlDoc, 'Assignment');
+            if (typeof assignments == 'undefined') j = 0;
+            else j = assignments.length;
+
+            for (i = 0; i < j; i++) {
+                let uid;
+                let resUID = this.getXMLNodeValue(assignments[i], 'ResourceUID', 1, -1);
+                uid = this.getXMLNodeValue(assignments[i], 'TaskUID', 1, -1);
+
+                if (uid > 0) {
+                    if (resUID > 0) assRes[uid] = res[resUID];
+                    ass[uid] = assignments[i];
+                }
+            }
+
+            // Store information about parent UIDs in an easily searchable form
+            for (i = 0; i < n; i++) {
+                let uid;
+                uid = this.getXMLNodeValue(Task[i], 'UID', 1, 0);
+                let vOutlineNumber;
+                if (uid != 0) vOutlineNumber = this.getXMLNodeValue(Task[i], 'OutlineNumber', 2, '0');
+                if (uid > 0) pars[vOutlineNumber] = uid;
+                if (uid > maxPID) maxPID = uid;
+            }
+
+            for (i = 0; i < n; i++) {
+                // optional parameters may not have an entry
+                // Task ID must NOT be zero otherwise it will be skipped
+                let pID = this.getXMLNodeValue(Task[i], 'UID', 1, 0);
+
+                if (pID != 0) {
+                    let pName = this.getXMLNodeValue(Task[i], 'Name', 2, 'No Task Name');
+                    let pStart = this.getXMLNodeValue(Task[i], 'Start', 2, '');
+                    let pEnd = this.getXMLNodeValue(Task[i], 'Finish', 2, '');
+                    let pPlanStart = this.getXMLNodeValue(Task[i], 'PlanStart', 2, '');
+                    let pPlanEnd = this.getXMLNodeValue(Task[i], 'PlanFinish', 2, '');
+                    let pDuration = this.getXMLNodeValue(Task[i], 'Duration', 2, '');
+                    let pLink = this.getXMLNodeValue(Task[i], 'HyperlinkAddress', 2, '');
+                    let pMile = this.getXMLNodeValue(Task[i], 'Milestone', 1, 0);
+                    let pComp = this.getXMLNodeValue(Task[i], 'PercentWorkComplete', 1, 0);
+                    let pCost = this.getXMLNodeValue(Task[i], 'Cost', 2, 0);
+                    let pGroup = this.getXMLNodeValue(Task[i], 'Summary', 1, 0);
+
+                    let pParent = 0;
+
+                    let vOutlineLevel = this.getXMLNodeValue(Task[i], 'OutlineLevel', 1, 0);
+                    let vOutlineNumber;
+                    if (vOutlineLevel > 1) {
+                        vOutlineNumber = this.getXMLNodeValue(Task[i], 'OutlineNumber', 2, '0');
+                        pParent = pars[vOutlineNumber.substr(0, vOutlineNumber.lastIndexOf('.'))];
+                    }
+
+                    let pNotes;
+                    try {
+                        pNotes = Task[i].getElementsByTagName('Notes')[0].childNodes[1].nodeValue; //this should be a CDATA node
+                    } catch (error) {
+                        pNotes = '';
+                    }
+
+                    let pRes;
+                    if (typeof assRes[pID] != 'undefined') pRes = assRes[pID];
+                    else pRes = '';
+
+                    let predecessors = this.findXMLNode(Task[i], 'PredecessorLink');
+                    if (typeof predecessors == 'undefined') j = 0;
+                    else j = predecessors.length;
+                    let pDepend = '';
+
+                    for (k = 0; k < j; k++) {
+                        let depUID = this.getXMLNodeValue(predecessors[k], 'PredecessorUID', 1, -1);
+                        let depType = this.getXMLNodeValue(predecessors[k], 'Type', 1, 1);
+
+                        if (depUID > 0) {
+                            if (pDepend.length > 0) pDepend += ',';
+                            switch (depType) {
+                                case 0:
+                                    pDepend += depUID + 'FF';
+                                    break;
+                                case 1:
+                                    pDepend += depUID + 'FS';
+                                    break;
+                                case 2:
+                                    pDepend += depUID + 'SF';
+                                    break;
+                                case 3:
+                                    pDepend += depUID + 'SS';
+                                    break;
+                                default:
+                                    pDepend += depUID + 'FS';
+                                    break;
+                            }
+                        }
+                    }
+
+                    let pOpen = true;
+                    let pCaption = '';
+
+                    let pClass;
+                    if (pGroup > 0) pClass = 'ggroupblack';
+                    else if (pMile > 0) pClass = 'gmilestone';
+                    else pClass = 'gtaskblue';
+
+                    // check for split tasks
+
+                    let splits = this.findXMLNode(ass[pID], 'TimephasedData');
+                    if (typeof splits == 'undefined') j = 0;
+                    else j = splits.length;
+
+                    let vSplitStart = pStart;
+                    let vSplitEnd = pEnd;
+                    let vSubCreated = false;
+                    let vDepend = pDepend.replace(/,*[0-9]+[FS]F/g, '');
+
+                    for (k = 0; k < j; k++) {
+                        let vDuration = this.getXMLNodeValue(splits[k], 'Value', 2, '0');
+                        //remove all text
+                        vDuration = '0' + vDuration.replace(/\D/g, '');
+                        vDuration *= 1;
+                        if ((vDuration == 0 && !vSubCreated) || (k + 1 == j && pGroup == 2)) {
+                            // No time booked in the given period (or last entry)
+                            // Make sure the parent task is set as a combined group
+                            pGroup = 2;
+                            // Handle last loop
+                            if (k + 1 == j) vDepend = pDepend.replace(/,*[0-9]+[FS]S/g, '');
+                            // Now create a subtask
+                            maxPID++;
+                            vSplitEnd = this.getXMLNodeValue(splits[k], (k + 1 == j) ? 'Finish' : 'Start', 2, '');
+                            this.AddTaskItem(new TaskItem(maxPID, pName, vSplitStart, vSplitEnd, 'gtaskblue',
+                                pLink, pMile, pRes, pComp, 0, pID, pOpen, vDepend, pCaption, pNotes, pCost,
+                                pPlanStart, pPlanEnd, pDuration));
+                            vSubCreated = true;
+                            vDepend = '';
+                        } else if (vDuration != 0 && vSubCreated) {
+                            vSplitStart = this.getXMLNodeValue(splits[k], 'Start', 2, '');
+                            vSubCreated = false;
+                        }
+                    }
+                    if (vSubCreated) pDepend = '';
+
+                    // Finally add the task
+                    this.AddTaskItem(new TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup,
+                        pParent, pOpen, pDepend, pCaption, pNotes, pCost, pPlanStart, pPlanEnd, pDuration));
+                }
+            }
+        } else {
+            Task = pXmlDoc.getElementsByTagName('task');
+            n = Task.length;
+
+            for (i = 0; i < n; i++) {
+                // optional parameters may not have an entry
+                // Task ID must NOT be zero otherwise it will be skipped
+                let pID = this.getXMLNodeValue(Task[i], 'pID', 1, 0);
+
+                if (pID != 0) {
+                    let pName = this.getXMLNodeValue(Task[i], 'pName', 2, 'No Task Name');
+                    let pStart = this.getXMLNodeValue(Task[i], 'pStart', 2, '');
+                    let pEnd = this.getXMLNodeValue(Task[i], 'pEnd', 2, '');
+                    let pPlanStart = this.getXMLNodeValue(Task[i], 'pPlanStart', 2, '');
+                    let pPlanEnd = this.getXMLNodeValue(Task[i], 'pPlanEnd', 2, '');
+                    let pDuration = this.getXMLNodeValue(Task[i], 'pDuration', 2, '');
+                    let pLink = this.getXMLNodeValue(Task[i], 'pLink', 2, '');
+                    let pMile = this.getXMLNodeValue(Task[i], 'pMile', 1, 0);
+                    let pComp = this.getXMLNodeValue(Task[i], 'pComp', 1, 0);
+                    let pCost = this.getXMLNodeValue(Task[i], 'pCost', 2, 0);
+                    let pGroup = this.getXMLNodeValue(Task[i], 'pGroup', 1, 0);
+                    let pParent = this.getXMLNodeValue(Task[i], 'pParent', 1, 0);
+                    let pRes = this.getXMLNodeValue(Task[i], 'pRes', 2, '');
+                    let pOpen = this.getXMLNodeValue(Task[i], 'pOpen', 1, 1);
+                    let pDepend = this.getXMLNodeValue(Task[i], 'pDepend', 2, '');
+                    let pCaption = this.getXMLNodeValue(Task[i], 'pCaption', 2, '');
+                    let pNotes = this.getXMLNodeValue(Task[i], 'pNotes', 2, '');
+                    let pClass = this.getXMLNodeValue(Task[i], 'pClass', 2, '');
+                    if (typeof pClass == 'undefined') {
+                        if (pGroup > 0) pClass = 'ggroupblack';
+                        else if (pMile > 0) pClass = 'gmilestone';
+                        else pClass = 'gtaskblue';
+                    }
+
+                    // Finally add the task
+                    this.AddTaskItem(new TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp,
+                        pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pCost, pPlanStart, pPlanEnd, pDuration));
+                }
+            }
+        }
+
+
+    }
+
+    // Events
+    // Function to open/close and hide/show children of specified task
+    folder(pID) {
+        let vList = this.vTaskList;
+
+        this.clearDependencies(); // clear these first so slow rendering doesn't look odd
+
+        const target = this.vTaskList?.find(task => task.vID === pID);
+
+        if(target) {
+            if(target.vOpen) {
+                target.vOpen = false;
+                this.hide(pID);
+                target.vGroupSpan.innerText = '+';
+            } else {
+                target.vOpen = true;
+                this.show(pID, true);
+
+                target.vGroupSpan.innerText = '-';
+            }
+        }
+
+        let bd;
+        if (this.vDebug) {
+            bd = new Date();
+            console.info('after drawDependency', bd);
+        }
+        this.DrawDependencies(this.vDebug);
+        if (this.vDebug) {
+            const ad = new Date();
+            console.info('after drawDependency', ad, (ad.getTime() - bd.getTime()));
+        }
+    }
+
+    hide(pID) {
+        let vList = this.getList();
+        let vID = 0;
+
+        this.vTaskList?.forEach(task => {
+            if (task.vParent == pID) {
+                vID = task.vID;
+                // it's unlikely but if the task list has been updated since
+                // the chart was drawn some of the rows may not exist
+                if (task.vListChildRow) task.vListChildRow.style.display = 'none';
+                if (task.vChildRow) task.vChildRow.style.display = 'none';
+                task.vVisible = false;
+                if (task.vGroup) this.hide(vID);
+            }
+        })
+    }
+
+// Function to show children of specified task
+    show(pID, pTop) {
+        let vID = 0;
+        let vState = '';
+
+        this.vTaskList?.forEach(task => {
+            if (task.vParent == pID) {
+                if (!task.vParItem) {
+                    console.error(`Cant find parent on who event (maybe problems with Task ID and Parent Id mixes?)`);
+                }
+                if (task.vParItem.vGroupSpan) {
+                    vState = task.vParItem.vGroupSpan.innerText;
+                }
+                // i = vList.length;
+            }
+        })
+
+        this.vTaskList?.forEach(task => {
+            if (task.vParent == pID) {
+                let vChgState = false;
+                vID = task.vID;
+
+                if (pTop == 1 && vState == '+') vChgState = true;
+                else if (vState == '-') vChgState = true;
+                else if (task.vParItem && task.vParItem.vGroup == 2) task.vVisible = true;
+
+                if (vChgState) {
+                    if (task.vListChildRow) task.vListChildRow.style.display = '';
+                    if (task.vChildRow) task.vChildRow.style.display = '';
+                    task.vVisible = true;
+                }
+                if (task.vGroup) this.show(vID, false);
+            }
+        });
+    }
+
+
+    addThisRowListeners(pObj1: HTMLElement, pObj2: HTMLElement) {
+        pObj1.addEventListener('mouseover', () => this.mouseOver(pObj1, pObj2));
+        pObj2.addEventListener('mouseover', () => this.mouseOver(pObj1, pObj2));
+        pObj1.addEventListener('mouseout', () => this.mouseOut(pObj1, pObj2));
+        pObj2.addEventListener('mouseout', () => this.mouseOut(pObj1, pObj2));
     }
 }

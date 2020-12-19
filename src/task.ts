@@ -1,6 +1,7 @@
+import { GanttChart } from './chart';
 import { formatDateStr, parseDateStr } from './utils/date_utils';
 import { newNode } from './utils/draw_utils';
-import { hashKey, internalProperties, internalPropertiesLang, stripUnwanted } from './utils/general_utils';
+import { hashString, internalProperties, internalPropertiesLang, stripUnwanted } from './utils/general_utils';
 
 export interface TaskItemObject {
   pID: number;
@@ -73,7 +74,7 @@ export class TaskItem {
   vGroupMinEnd: Date = null;
   vGroupMinPlanStart: Date = null;
   vGroupMinPlanEnd: Date = null;
-  vRes: string = '\u00A0';
+  vRes: string | null = '\u00A0';
   vCompVal: number;
 
   vDepend: any[] = null;
@@ -106,7 +107,7 @@ export class TaskItem {
               public vClass: string,
               public vLink: string,
               public vMile: boolean,
-              public pRes,
+              public pRes: string,
               public vComp: number,
               public vGroup: number,
               public vParent: number,
@@ -114,7 +115,7 @@ export class TaskItem {
               pDepend: string,
               public vCaption: string,
               pNotes: string,
-              public vGantt,
+              public vGantt: GanttChart,
               public vCost?: number,
               pPlanStart?: Date | string,
               pPlanEnd?: Date | string,
@@ -122,11 +123,11 @@ export class TaskItem {
               public vBarText?: string,
               public vDataObject?: any) {
 
-    this.vID = hashKey(this.vID.toString());
-    this.vRes = document.createTextNode(pRes).data;
+    this.vID = hashString(this.vID.toString());
+    this.vRes = pRes;
 
     if (this.vParent && this.vParent !== 0) {
-      this.vParent = hashKey(this.vParent.toString()).toString();
+      this.vParent = hashString(this.vParent.toString());
     }
 
     this.vOpen = (this.vGroup == 2) ? true : this.vOpen;
@@ -142,22 +143,22 @@ export class TaskItem {
     }
 
     if (pStart != null && pStart != '') {
-      this.vStart = (pStart instanceof Date) ? pStart : parseDateStr(document.createTextNode(pStart).data, this.vGantt.getDateInputFormat());
+      this.vStart = (pStart instanceof Date) ? pStart : parseDateStr(pStart, this.vGantt.getDateInputFormat());
       this.vGroupMinStart = this.vStart;
     }
 
     if (pEnd != null && pEnd != '') {
-      this.vEnd = (pEnd instanceof Date) ? pEnd : parseDateStr(document.createTextNode(pEnd).data, this.vGantt.getDateInputFormat());
+      this.vEnd = (pEnd instanceof Date) ? pEnd : parseDateStr(pEnd, this.vGantt.getDateInputFormat());
       this.vGroupMinEnd = this.vEnd;
     }
 
     if (pPlanStart != null && pPlanStart != '') {
-      this.vPlanStart = (pPlanStart instanceof Date) ? pPlanStart : parseDateStr(document.createTextNode(pPlanStart).data, this.vGantt.getDateInputFormat());
+      this.vPlanStart = (pPlanStart instanceof Date) ? pPlanStart : parseDateStr(pPlanStart, this.vGantt.getDateInputFormat());
       this.vGroupMinPlanStart = this.vPlanStart;
     }
 
     if (pPlanEnd != null && pPlanEnd != '') {
-      this.vPlanEnd = (pPlanEnd instanceof Date) ? pPlanEnd : parseDateStr(document.createTextNode(pPlanEnd).data, this.vGantt.getDateInputFormat());
+      this.vPlanEnd = (pPlanEnd instanceof Date) ? pPlanEnd : parseDateStr(pPlanEnd, this.vGantt.getDateInputFormat());
       this.vGroupMinPlanEnd = this.vPlanEnd;
     }
 
@@ -185,7 +186,7 @@ export class TaskItem {
         }
 
         if (this.vDepend[k]) {
-          this.vDepend[k] = hashKey(this.vDepend[k]).toString();
+          this.vDepend[k] = hashString(this.vDepend[k]).toString();
         }
       }
     }

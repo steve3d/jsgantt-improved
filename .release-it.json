@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "after:bump": [
+      "npm run build"
+    ]
+  },
+  "git": {
+    "requireCleanWorkingDir": false
+  },
+  "npm": {
+    "publishPath": "dist"
+  }
+}

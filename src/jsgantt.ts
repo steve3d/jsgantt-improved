@@ -30,16 +30,12 @@
 
 export { GanttChart } from './chart';
 export {
-	showToolTip, addTooltipListeners, addThisRowListeners, addFormatListeners,
-	folder, hide, show,
-	addScrollListeners, addFolderListeners, addListener
+	showToolTip, addTooltipListeners
 } from "./events";
 export {
-	findObj, changeFormat,
+	findObj,
 	stripIds, stripUnwanted, delayedHide, getOffset,
-	getScrollPositions, isIE, benchMark, getZoomFactor, hideToolTip, fadeToolTip, criticalPath, updateFlyingObj, moveToolTip,
+	getScrollPositions, benchMark, getZoomFactor, hideToolTip, fadeToolTip, criticalPath, updateFlyingObj, moveToolTip,
 } from "./utils/general_utils";
-export { parseXML, parseXMLString, findXMLNode, getXMLNodeValue, AddXMLTask } from './xml';
 export { taskLink, sortTasks, TaskItem, processRows } from './task';
-export { parseJSON, parseJSONString, addJSONTask } from "./json";
 export { getMinDate, getMaxDate, parseDateStr, formatDateStr, parseDateFormatStr, getIsoWeek } from "./utils/date_utils";

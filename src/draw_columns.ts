@@ -120,13 +120,13 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
     const button = "<button>+</button>";
     vTmpDiv = newNode(vTmpCell, 'div', null, null, button);
 
-    const callback = (task: TaskItem, e) => {
-      task.vGantt.AddTaskItemObject({
-        vParent: task.vParent
-      });
-    }
-    addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'addentries', Draw.bind(this));
-    addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'addentries');
+    // const callback = (task: TaskItem, e) => {
+    //   task.vGantt.AddTaskItemObject({
+    //     pParent: task.vParent
+    //   } as TaskItem);
+    // }
+    // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'addentries', Draw.bind(this));
+    // addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'addentries');
   }
 };
 
