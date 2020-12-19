@@ -1,5 +1,4 @@
 import { TaskItem } from './task';
-
 export interface ChartOptions {
     vUseFade?: boolean;
     vUseMove?: boolean;
@@ -42,7 +41,7 @@ export interface ChartOptions {
     vQuarterMajorDateDisplayFormat?: string;
     vQuarterMinorDateDisplayFormat?: string;
     vCaptionType?: 'Caption' | 'Resource' | 'Duration' | 'Complete';
-    vFormat?: 'hour'| 'day'| 'week'| 'month'| 'quarter';
+    vFormat?: 'hour' | 'day' | 'week' | 'month' | 'quarter';
     vScrollTo?: string | Date;
     vHourColWidth?: number;
     vDayColWidth?: number;
@@ -55,44 +54,40 @@ export interface ChartOptions {
     vTooltipDelay?: number;
     vTooltipTemplate?: string;
     vTotalHeight?: string;
-
-// EVENTS
     vEvents?: {
         taskname?: (task: TaskItem, e: Event, vTmpCell: HTMLTableCellElement, column: string) => void;
-        res?: (tasks: TaskItem[], task: TaskItem, e: Event, vTmpCell: HTMLTableCellElement, name: string) => void,
-        dur?: (e) => void,
-        comp?: (e) => void,
-        startdate?: (e) => void,
-        enddate?: (e) => void,
-        planstartdate?: (e) => void,
-        planenddate?: (e) => void,
-        cost?: (e) => void,
-        beforeDraw?: () => void,
-        afterDraw?: () => void,
-        beforeLineDraw?: () => void,
-        afterLineDraw?: () => void,
-        onLineDraw?: (e) => void,
-        onLineContainerHover?: (e) => void
+        res?: (tasks: TaskItem[], task: TaskItem, e: Event, vTmpCell: HTMLTableCellElement, name: string) => void;
+        dur?: (e: any) => void;
+        comp?: (e: any) => void;
+        startdate?: (e: any) => void;
+        enddate?: (e: any) => void;
+        planstartdate?: (e: any) => void;
+        planenddate?: (e: any) => void;
+        cost?: (e: any) => void;
+        beforeDraw?: () => void;
+        afterDraw?: () => void;
+        beforeLineDraw?: () => void;
+        afterLineDraw?: () => void;
+        onLineDraw?: (e: any) => void;
+        onLineContainerHover?: (e: any) => void;
     };
     vEventsChange?: {
-        taskname: (task: TaskItem, e, vTmpCell: HTMLTableCellElement, column: string) => void,
-        res?: (e) => void,
-        dur?: (e) => void,
-        comp?: (e) => void,
-        startdate?: (e) => void,
-        enddate?: (e) => void,
-        planstartdate?: (e) => void,
-        planenddate?: (e) => void,
-        cost?: (e) => void,
-        line?: (e) => void
+        taskname: (task: TaskItem, e: any, vTmpCell: HTMLTableCellElement, column: string) => void;
+        res?: (e: any) => void;
+        dur?: (e: any) => void;
+        comp?: (e: any) => void;
+        startdate?: (e: any) => void;
+        enddate?: (e: any) => void;
+        planstartdate?: (e: any) => void;
+        planenddate?: (e: any) => void;
+        cost?: (e: any) => void;
+        line?: (e: any) => void;
     };
-    vEventClickRow?: (e) => void;
-    vEventClickCollapse?: (e) => void;
-
+    vEventClickRow?: (e: any) => void;
+    vEventClickCollapse?: (e: any) => void;
     vResources?: string[];
     vAdditionalHeaders?: any;
     vColumnOrder?: string[];
-
     vEditable?: boolean;
     vDebug?: boolean;
 }
