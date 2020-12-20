@@ -76,7 +76,6 @@ export class TaskItem {
   vGroupMinEnd: Date = null;
   vGroupMinPlanStart: Date = null;
   vGroupMinPlanEnd: Date = null;
-  vRes: string | null = '\u00A0';
   vCompVal: number;
 
   vDepend: any[] = null;
@@ -110,7 +109,7 @@ export class TaskItem {
               public vClass: string,
               public vLink: string,
               public vMile: boolean,
-              public pRes: string,
+              public vRes: string,
               public vComp: number,
               public vGroup: number,
               public vParent: number,
@@ -127,7 +126,6 @@ export class TaskItem {
               public vDataObject?: any) {
 
     this.vID = hashString(this.vID.toString());
-    this.vRes = pRes;
 
     if (this.vParent && this.vParent !== 0) {
       this.vParent = hashString(this.vParent.toString());

@@ -484,10 +484,14 @@ span.gfoldercollapse {
   border-color: #0000ff;
 }
 
-div.gtaskbarcontainer {
+.gtaskbarcontainer {
   z-index: 1;
   position: absolute;
-  top: 0px
+  top: 0;
+
+  &, & > * {
+    cursor: pointer;
+  }
 }
 
 .textbar {
@@ -810,6 +814,7 @@ td.gspanning div {
 .gmainright {
   overflow: hidden;
   flex: auto;
+  user-select: none;
 }
 
 .gmainleft {
