@@ -1,6 +1,6 @@
 {
   "name": "@vrdd/jsgantt-improved",
-  "version": "2.7.6",
+  "version": "2.7.7",
   "description": "jsgantt-improved",
   "main": "lib/jsgantt.umd.js",
   "module": "lib/jsgantt.esm.js",
