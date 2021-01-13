@@ -116,6 +116,7 @@ export class GanttChart {
     vChartTable: HTMLTableElement;
     vLines: HTMLElement;
     vTimer = 20;
+    vTool: any;
     vTooltipDelay = 1500;
     vTooltipTemplate = null;
     vMinDate: Date = null;
@@ -153,6 +154,12 @@ export class GanttChart {
     set vLang(val: string) {
         if (this.vLangs.hasOwnProperty(val))
             this.currentLang = val;
+    }
+
+    destroy() {
+        if(this.vTool instanceof HTMLElement) {
+            this.vTool.remove();
+        }
     }
 
     /**

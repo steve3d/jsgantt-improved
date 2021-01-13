@@ -1,3 +1,4 @@
+import { GanttChart } from './chart';
 import {
     delayedHide,
     fadeToolTip,
@@ -8,7 +9,7 @@ import {
     updateFlyingObj
 } from "./utils/general_utils";
 
-export function showToolTip(pGanttChartObj, e, pContents, pWidth, pTimer) {
+export function showToolTip(pGanttChartObj: GanttChart, e, pContents, pWidth, pTimer) {
     let vTtDivId = pGanttChartObj.getDivId() + 'JSGanttToolTip';
     let vMaxW = 500;
     let vMaxAlpha = 100;
