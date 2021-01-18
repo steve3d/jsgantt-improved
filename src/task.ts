@@ -300,11 +300,11 @@ export class TaskItem {
         this.vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['wks'] : pLang['wk']);
         break;
       case 'month':
-        tmpPer = Math.round(hours / 24 / 7 / 30);
+        tmpPer = Math.round(hours / 24 / 30);
         this.vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['mths'] : pLang['mth']);
         break;
       case 'quarter':
-        tmpPer = Math.round(hours / 24 / 7 / 30 / 3);
+        tmpPer = Math.round(hours / 24 / 30 / 3);
         this.vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['qtrs'] : pLang['qtr']);
         break;
     }
